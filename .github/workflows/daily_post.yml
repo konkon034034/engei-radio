@@ -1,15 +1,17 @@
-name: Daily Kamishibai Post
+name: Daily Post
 on:
-  schedule:
-    - cron: '30 3 * * *'
+  # schedule:
+  #   - cron: '30 4 * * *'
   workflow_dispatch:
 
 jobs:
-  post:
+  build_and_post:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+        with:
+          lfs: true
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -18,9 +20,9 @@ jobs:
           python-version: '3.11'
       - run: pip install -r requirements.txt
       - run: cd remotion && npm install
-      - run: python src/main_kamishibai.py --prod
+      - run: python src/main.py --prod --remotion
         env:
           GOOGLE_API_KEYS: ${{ secrets.GOOGLE_API_KEYS }}
           CHANNEL_THEME: '園芸'
-          CHANNEL_NAME: 'もう枯らさない!家庭園芸'
+          CHANNEL_NAME: 'もう枯らさない家庭園芸'
           CHANNEL_COLOR: '#228B22'

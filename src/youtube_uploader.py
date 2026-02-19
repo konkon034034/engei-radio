@@ -1,4 +1,4 @@
-﻿import os
+import os
 import time
 import json
 import base64
@@ -13,7 +13,8 @@ from google.auth.exceptions import RefreshError
 # 必要な権限
 SCOPES = [
     'https://www.googleapis.com/auth/youtube.upload',
-    'https://www.googleapis.com/auth/youtube.force-ssl'
+    'https://www.googleapis.com/auth/youtube',
+    'https://www.googleapis.com/auth/youtube.force-ssl'  # コメント投稿に必要
 ]
 TOKEN_FILE = 'token.json'
 
@@ -23,7 +24,7 @@ class YouTubeUploader:
         self.youtube = self._get_authenticated_service()
 
     def _log(self, level, message):
-        """統一されたログ出力（Windows対応）"""
+        """統一されたログ出力"""
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         prefix = {
             'INFO': '[INFO]',
@@ -32,12 +33,7 @@ class YouTubeUploader:
             'ERROR': '[ERR]',
             'DEBUG': '[DBG]'
         }.get(level, '[LOG]')
-        try:
-            print(f"[{timestamp}] {prefix} {message}")
-        except UnicodeEncodeError:
-            # Windows cp932対応
-            safe_message = message.encode('cp932', errors='replace').decode('cp932')
-            print(f"[{timestamp}] {prefix} {safe_message}")
+        print(f"[{timestamp}] {prefix} {message}")
 
     def _save_token(self, creds):
         """トークンを安全に保存しGitHub Secrets用のBase64も出力"""
@@ -334,6 +330,26 @@ class YouTubeUploader:
         except Exception as e:
             self._log('ERROR', f'サムネイル設定失敗: {e}')
             return None
+
+    def get_video_count(self):
+        """チャンネルの公開動画数を取得してエピソード番号に使う"""
+        if not self.youtube:
+            self._log('WARNING', 'YouTubeサービス未初期化のため動画数取得スキップ')
+            return 0
+        try:
+            response = self.youtube.channels().list(
+                part="statistics",
+                mine=True
+            ).execute()
+            if response.get('items'):
+                count = int(response['items'][0]['statistics'].get('videoCount', 0))
+                self._log('INFO', f'チャンネル動画数: {count}本')
+                return count
+            self._log('WARNING', 'チャンネル情報取得失敗')
+            return 0
+        except Exception as e:
+            self._log('WARNING', f'動画数取得失敗: {e}')
+            return 0
 
 if __name__ == "__main__":
     # テスト実行
