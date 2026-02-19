@@ -1,0 +1,9 @@
+python-dotenv
+google-genai
+httpx
+edge-tts
+pydub
+pillow
+google-auth
+google-auth-oauthlib
+google-api-python-client
