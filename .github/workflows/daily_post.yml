@@ -24,5 +24,5 @@ jobs:
         env:
           GOOGLE_API_KEYS: ${{ secrets.GOOGLE_API_KEYS }}
           CHANNEL_THEME: '園芸'
-          CHANNEL_NAME: 'もう枯らさない家庭園芸'
-          CHANNEL_COLOR: '#228B22'
+          CHANNEL_NAME: '園芸ラジオ'
+          CHANNEL_COLOR: '#2ecc71'
