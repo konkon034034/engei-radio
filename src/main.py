@@ -146,7 +146,8 @@ def fetch_trending_youtube_videos(keywords=None, max_videos=5, days=5, min_views
     from datetime import datetime, timedelta, timezone
     
     if keywords is None:
-        keywords = ["年金 最新 ニュース", "年金 老後", "年金ニュース 2026"]
+        theme = os.environ.get('CHANNEL_THEME', '暮らし')
+        keywords = [f"{theme} 最新", f"{theme} 生活", f"{theme} 2026"]
     if skip_words is None:
         skip_words = []
     
@@ -281,15 +282,15 @@ def fetch_x_posts_via_grok(keywords, max_posts=5):
         rich_prompt = f"""日本語で回答して。
 
 目的: YouTube動画の台本に使う「Xでのリアルタイムの声」を収集する
-テーマ: 年金・老後の暮らし
-想定視聴者: 年金受給者・定年退職者・老後に不安を持つ50-70代女性
-領域: 年金制度、受給額変更、老後の生活設計、社会保障
+テーマ: {theme}
+想定視聴者: {theme}に関心を持つ50-70代の方
+領域: {theme}に関連する暮らし・知恵・情報
 
 やること（4段階リサーチ）:
 
 1) まず「広く薄く」探索する:
    - 以下のシードクエリに加え、関連する検索クエリを自分で5個以上追加してX検索する
-   - シードクエリ: 年金 制度変更, 年金 受給額, 老後 不安, 年金生活 節約, 社会保障 最新
+   - シードクエリ: {theme} 最新, {theme} 暮らし, {theme} コツ, {theme} 節約, {theme} おすすめ
    - 可能ならバズっている投稿（いいね数・リポスト数が多い）を優先的に拾う
 
 2) 収集した投稿から「繰り返し出てくるトピック」を3-5クラスターにまとめる:
@@ -301,7 +302,7 @@ def fetch_x_posts_via_grok(keywords, max_posts=5):
    - 長文の直接引用はせず、1-2行で要約する
 
 4) 各クラスターについて「庶民の本音」を1行で要約する:
-   - 視聴者（年金受給者・定年退職者・老後に不安を持つ50-70代女性）が「そうそう！」と共感する言い方で
+   - 視聴者（{theme}に関心を持つ50-70代の方）が「そうそう！」と共感する言い方で
    - 不確かな情報は「未確認」と明記する
 
 出力形式（必ずこの構造で）:
@@ -378,7 +379,7 @@ def fetch_news_from_rss(keywords, max_articles=5):
     """Google News RSSからキーワードでニュース記事を取得する
     
     Args:
-        keywords: 検索キーワードのリスト（例: ["年金", "制度改定"]）
+        keywords: 検索キーワードのリスト（例: ["テーマ名", "関連ワード"]）
         max_articles: 取得する記事の最大数
     
     Returns:
@@ -495,10 +496,10 @@ def scrape_article_text(url, max_chars=2000):
         return ""
 
 
-def summarize_youtube_for_script(videos, channel_theme="年金"):
+def summarize_youtube_for_script(videos, channel_theme="暮らし"):
     """YouTube市民生活インタビュー動画をGeminiで台本用に要約する
     
-    年金ch専用: 「他の人がどう暮らしてるか」を紹介する形式。
+    テーマに合わせて「他の人がどう暮らしてるか」を紹介する形式。
     視聴者は自分と比較して安心したり危機感を持ったりしたい。
     """
     if not videos:
@@ -518,7 +519,7 @@ def summarize_youtube_for_script(videos, channel_theme="年金"):
 
 【重要ルール】
 - 動画タイトルから読み取れる情報（年齢、税金額、生活状況、節約方法など）を具体的に記載
-- 「この方は○歳で、年金は月○万円。○○をしながら暮らしているそうです」という紹介形式
+- 「この方は○歳で、○○をしながら暮らしているそうです」という紹介形式
 - カツミ・ヒロシの2人番組で、視聴者が「自分と比較できる」ネタとして使う
 - 他の人の暮らしぶりを知ることで「自分はまだマシかも」「もっと節約しなきゃ」と思える内容に
 - 推測・想像で細部を補ってよい（税金額が不明な場合は「○万円台とのこと」等）
@@ -543,7 +544,7 @@ def summarize_youtube_for_script(videos, channel_theme="年金"):
         return f"情報サイトで見つけた一般市民の声を紹介します:\n{titles_text}"
 
 
-def summarize_news_for_script(articles, channel_theme="年金"):
+def summarize_news_for_script(articles, channel_theme="暮らし"):
     """RSSで取得した実記事をGeminiで台本用に要約する
     
     タイトル+出典名をベースに要約。本文が取れた場合は補助情報として活用。
@@ -551,7 +552,7 @@ def summarize_news_for_script(articles, channel_theme="年金"):
     
     Args:
         articles: [{"title": "...", "url": "...", "source": "...", "body": "..."(optional)}]
-        channel_theme: チャンネルのテーマ（年金/政治/給付金 等）
+        channel_theme: チャンネルのテーマ（CHANNEL_THEME環境変数から取得）
     
     Returns:
         台本生成に渡すニュース要約テキスト
@@ -788,6 +789,12 @@ class VideoEngineV4:
             self.fps = 24
             self.scale = 1.0
             
+        # チャンネルテーマ（環境変数から取得）
+        self.channel_theme = os.environ.get('CHANNEL_THEME', '暮らし')
+        self.channel_name = os.environ.get('CHANNEL_NAME', 'default')
+        self.channel_color = os.environ.get('CHANNEL_COLOR', '#e74c3c')
+        print(f"[CONFIG] チャンネルテーマ: {self.channel_theme}")
+
         self.api_keys = self._get_api_keys()
         self.key_idx = 0
         self.key_errors = {}  # キーごとのエラーカウント
@@ -908,17 +915,21 @@ class VideoEngineV4:
         else:
             target_len = "3分以上厳守"
         
-        # ===== コンテンツ取得（人間ドキュメンタリー型: 年金生活者のストーリー） =====
-        # 参考YouTubeチャンネルから年金生活者の動画を取得し、1人のストーリーを深掘り
+        # テーマ変数を設定
+        theme = self.channel_theme
+
+        # ===== コンテンツ取得（人間ドキュメンタリー型: テーマベース） =====
+        # 参考YouTubeチャンネルからテーマ関連の動画を取得し、ストーリーを深掘り
         print("===== コンテンツ取得（人間ドキュメンタリー型） =====")
         
-        # Part 1: 参考チャンネルから年金生活者の動画を検索
-        print("--- Part 1: 参考チャンネルから年金生活者ストーリー動画を検索 ---")
-        # 参考チャンネル: @nenkin-shiritai, @nenkin_tyousasimasu, @nenkin-talk, @nenkin-real
+        # Part 1: 参考チャンネルからテーマ関連動画を検索
+        print(f"--- Part 1: 参考チャンネルから{theme}ストーリー動画を検索 ---")
+        # YouTube検索でテーマに関連する動画を取得
+        # CHANNEL_THEMEベースでYouTube検索キーワードを動的生成
         story_keywords = [
-            "年金生活 月いくら", "年金生活 暮らし 実態", "年金受給者 生活費",
-            "年金 一人暮らし リアル", "年金生活 節約 日常", "年金生活者 密着",
-            "老後 年金だけ 暮らし", "年金 夫婦 生活費 内訳"
+            f"{theme} 暮らし 実態", f"{theme} 生活費", f"{theme} リアル",
+            f"{theme} 節約 日常", f"{theme} 密着", f"{theme} コツ",
+            f"{theme} シニア", f"{theme} 体験談"
         ]
         yt_videos = fetch_trending_youtube_videos(
             keywords=story_keywords,
@@ -927,26 +938,26 @@ class VideoEngineV4:
         
         story_summary = ""
         if yt_videos and len(yt_videos) >= 1:
-            print(f"[OK] 年金生活者ストーリー動画{len(yt_videos)}件取得成功")
-            # 1人の年金生活者のストーリーをサマリーとして抽出
-            story_summary = summarize_youtube_for_script(yt_videos, channel_theme="年金生活者ストーリー")
+            print(f"[OK] {theme}ストーリー動画{len(yt_videos)}件取得成功")
+            # ストーリーをサマリーとして抽出
+            story_summary = summarize_youtube_for_script(yt_videos, channel_theme=f"{theme}の体験談")
         
-        # Part 2: RSSで年金関連の統計データを取得（チャートデータ用）
-        print("--- Part 2: 年金関連統計データ（RSS） ---")
+        # Part 2: RSSでテーマ関連の統計データを取得（チャートデータ用）
+        print(f"--- Part 2: {theme}関連統計データ（RSS） ---")
         rss_articles = fetch_news_from_rss(
-            keywords=["年金 生活費", "年金 平均額", "高齢者 家計"],
+            keywords=[f"{theme} 生活費", f"{theme} 最新", f"シニア {theme}"],
             max_articles=2
         )
         stats_brief = ""
         if rss_articles:
             for article in rss_articles:
                 article['body'] = scrape_article_text(article['url'])
-            stats_brief = summarize_news_for_script(rss_articles, channel_theme="年金")
+            stats_brief = summarize_news_for_script(rss_articles, channel_theme=theme)
         
         # Part 3: X(旧Twitter)でリアルタイムの声を取得
-        print("--- Part 3: X(旧Twitter)年金生活者の声 ---")
+        print(f"--- Part 3: X(旧Twitter){theme}の声 ---")
         x_posts = fetch_x_posts_via_grok(
-            keywords=["年金生活 リアル", "年金だけ 暮らし", "老後 年金 不安"],
+            keywords=[f"{theme} リアル", f"{theme} 暮らし", f"{theme} 体験"],
             max_posts=5
         )
         x_voices = ""
@@ -957,7 +968,7 @@ class VideoEngineV4:
         # 合体: ストーリー素材
         x_section = f"\n\n【Xでのリアルな声】\n{x_voices}" if x_voices else ""
         stats_section = f"\n\n【統計データ（チャート用）】\n{stats_brief}" if stats_brief else ""
-        news_content = f"""【年金生活者のストーリー素材（メインコンテンツ）】
+        news_content = f"""【{theme}のストーリー素材（メインコンテンツ）】
 {story_summary}
 {stats_section}{x_section}"""
         
@@ -992,16 +1003,16 @@ CRITICAL CONSTRAINTS:
 - Viewers should feel "this is about ME" and keep watching to the end
 
 
-## SHOW CONCEPT: "年金生活者の生き様"
-This is a HUMAN STORY channel. Each episode features 1 real pension recipient's life story.
+## SHOW CONCEPT: "{self.channel_theme}の暮らしの知恵"
+This is a HUMAN STORY channel. Each episode features a real story related to {self.channel_theme}.
 The story follows a narrative arc (hero's journey): Background → Challenges → Current life → Lessons.
-カツミ and ヒロシ discuss the person's life with honest opinions and data.
+カツミ and ヒロシ discuss the topic with honest opinions and data, from the perspective of {self.channel_theme}.
 
 ## TODAY'S STORY MATERIAL (source for creating the person's profile)
 {prompt[:3000]}
 
 ## YOUR TASK
-Based on the material above, create a compelling profile of 1 pension recipient:
+Based on the material above, create a compelling profile of 1 person related to {self.channel_theme}:
 1. Name (MUST be a completely ORIGINAL fictional pseudonym - 完全オリジナルの仮名を創作すること)
    ★★★ 絶対禁止: YouTube元動画の人物名をそのまま使うこと。著作権・プライバシー問題を避けるため、名前・経歴・エピソードは全てオリジナルに再構成すること ★★★
 2. Age, former occupation, pension amount (数字は参考素材を元に少し変更してよい)
@@ -1023,7 +1034,7 @@ Based on the material above, create a compelling profile of 1 pension recipient:
   "story_arc": ["intro_profile", "challenge", "turning_point", "current_life", "data_comparison", "lesson"],
   "key_facts": ["この人の印象的な事実1", "この人の印象的な事実2", "統計との比較ポイント"],
   "stat_data": [
-    {{"topic": "この人と同世代の平均年金額", "source": "厚生労働省", "angle": "比較"}},
+    {{"topic": "この人と同分野の関連統計", "source": "公式統計", "angle": "比較"}},
     {{"topic": "生活費の内訳（全国平均 vs この人）", "source": "総務省家計調査", "angle": "差異"}}
   ]
 }}
@@ -1061,10 +1072,10 @@ Based on the material above, create a compelling profile of 1 pension recipient:
             stat_data_json = json.dumps(stat_data, ensure_ascii=False) if stat_data else "[]"
             
             detail_prompt = f"""
-Generate a 年金生活者の生き様 script. This is a HUMAN DOCUMENTARY show, NOT a news show.
+Generate a {self.channel_theme} script. This is a HUMAN DOCUMENTARY show, NOT a news show.
 
-CORE CONCEPT: ある年金生活者の「慎ましい日常」をリアルに伝えるドキュメンタリー。
-キラキラした節約術自慢ではない。淡々と慎ましく暮らしている人のリアルな日常。
+CORE CONCEPT: {self.channel_theme}に関する「慎ましい日常」をリアルに伝えるドキュメンタリー。
+キラキラした自慢ではない。{self.channel_theme}について淡々と暮らしている人のリアルな日常。
 みんな大変なのに頑張ってる。日本人らしい慎ましさ。小さな楽しみを見つけて必死に生きてる。
 ★ トーンは全編暗くする必要はない。お金の話は暗くなりがちだけど、
   「暗いなりにも頑張ってるんだよね」という前向きさを全編通して滲み出させること。
@@ -1135,21 +1146,21 @@ CRITICAL CONSTRAINTS:
 ## PROGRAM FLOW: 人間ドキュメンタリー構成（神話の法則 = ヒーローズジャーニー）
 
 ### OPENING (3-4 lines) - ぐいぐい紹介に入る！
-カツミ: "あなたの年金生活を考えるカツミです" (MUST say this exact phrase)
+カツミ: "あなたの{self.channel_theme}を考えるカツミです" (MUST say this exact phrase, using the channel theme)
 ヒロシ: "ヒロシです" (MUST say this exact phrase)
 カツミ: "ちょっと聞いてよヒロシ" → この人の一番インパクトのある情報でぐいぐい引き込む
-★ 淡々とした「今日はある年金生活者の〜」はNG。カツミが「この人さぁ...」とぐいぐい行く。
+★ 淡々とした「今日はある〜」はNG。カツミが「この人さぁ...」とぐいぐい行く。
 ★ でもキラキラした紹介もNG。「すごい人見つけた！」ではなく「この人の話、聞いて...」と重めに入ってOK。
 
 ### ACT 1: 日常の世界〜旅の始まり（5-8 lines）
 - この人がかつてどんな人生を歩んでいたか（普通の日常）
 - そこに訪れた転機（配偶者の死、病気、リストラ、離婚等）
-- 年金生活に入ったきっかけ
+- {self.channel_theme}に関わるきっかけ
 - 辛い話でも「でもこの人、頑張ってるのよね」と前向きさを滲ませる
 
 ### ACT 2: 試練と深淵〜本音トーク（10-15 lines） - ここがメイン！
 - この人の今の慎ましい日常を丁寧に描写する
-- 月○万円の年金でどうやって暮らしているか、具体的な数字
+- どうやって暮らしているか、具体的な数字（{self.channel_theme}の観点から）
 - 全国平均との比較データ（チャート用）
 - カツミとヒロシが自分の人生と重ねて語る（最低5往復）
 - ★★★ 重要: 「賢い節約術！」ではなく「こうするしかないから、こうしてる」というリアルさ ★★★
@@ -1179,7 +1190,7 @@ Example flow:
 ## 本音トーク REQUIREMENTS (CRITICAL)
 - カツミ = 共感の人。この人の辛さを理解しつつ「でもしょうがないわよね」と受け止める
 - ヒロシ = データと自分の体験。「数字で見るとこうなんですよ」「うちも実は...」
-- CONCEPT: 華やかさは一切なし。淡々とした年金生活のリアルを丁寧に描写する
+- CONCEPT: 華やかさは一切なし。淡々とした{self.channel_theme}のリアルを丁寧に描写する
 - TONE: 全編暗くしない。暗いなりにも頑張ってる感を滲ませる。最後は絶対ポジティブ。
 
 ### Required Elements:
@@ -1197,7 +1208,7 @@ Example flow:
 - ニュース速報のような淡々とした解説（これはドキュメンタリーであり、ニュース番組ではない）
 
 ## TITLE RULES (SEO + EMOTION)
-- Format: 【実話】or【密着】or【年金生活】+ この人のキャッチフレーズ
+- Format: 【実話】or【密着】or【{self.channel_theme}】+ この人のキャッチフレーズ
 - MUST trigger curiosity: "月○万円で暮らす○歳の..." "○○を失った○歳が見つけた..."
 - Max 60 characters
 
@@ -1231,7 +1242,7 @@ Example flow:
   "key_points": ["この人の印象的なポイント1", "統計との比較ポイント", "学べる教訓"],
   "reference_sources": [{{"name": "サイト名", "url": "URL"}}],
   "first_comment": "カツミの初コメント（FIRST COMMENT RULES準拠）",
-  "tags": ["年金生活", "老後", "シニア"],
+  "tags": ["{self.channel_theme}", "シニア", "暮らし"],
   "dynamic_hashtags": ["ハッシュタグ1", "ハッシュタグ2"],
   "script": [
     {{"speaker": "カツミ", "text": "...", "voice": "Kazuha", "section": "main", "emotion": "default"}},
@@ -1388,7 +1399,7 @@ Example flow:
         print(f"[OK] key_points維持: {len(data.get('key_points', []))}件(LLM生成の要約ポイント)")
         
         # 概要欄の組み立て（1500文字以内に収める）
-        fixed_header = "年金だけで暮らせるのか？\nカツミとヒロシが、実在する年金生活者の生き様を紹介し本音で語ります\n\n[利用ツールについて]\n本動画はAIで構成を生成し、運営者が内容の正確性を検証・編集しています。\n音声合成にはAI技術を使用しています。\n情報源は厚生労働省・総務省など公式サイトを使用しています。\n\n"
+        fixed_header = f"{self.channel_theme}について考える\nカツミとヒロシが、{self.channel_theme}の日常を紹介し本音で語ります\n\n[利用ツールについて]\n本動画はAIで構成を生成し、運営者が内容の正確性を検証・編集しています。\n音声合成にはAI技術を使用しています。\n情報源は公式サイトを参考にしています。\n\n"
         
         timestamp_section = ""  # タイムスタンプは現在未使用（section="main"固定のため）
         
@@ -1423,10 +1434,10 @@ Example flow:
         # 動的ハッシュタグの生成
         dynamic_tags = data.get('dynamic_hashtags', [])
         dynamic_hashtags_str = " ".join([f"#{tag.replace('#', '')}" for tag in dynamic_tags[:4]])
-        fixed_hashtags = "#年金 #年金生活 #年金生活者の生き様 #老後の暮らし #シニア #実話"
+        fixed_hashtags = f"#{self.channel_theme} #シニア #暮らし #実話 #{self.channel_name}"
         all_hashtags = f"{fixed_hashtags} {dynamic_hashtags_str}".strip()
         
-        fixed_footer = f"{all_hashtags}\n\nこの動画は公式情報源を基に独自に解説したものです最新情報は各公式サイトをご確認ください年金に関する判断はご自身の責任で行ってください"
+        fixed_footer = f"{all_hashtags}\n\nこの動画は公式情報源を基に独自に解説したものです最新情報は各公式サイトをご確認ください判断はご自身の責任で行ってください"
         
         # エピソード番号の付与（YouTube APIからチャンネル動画数を取得）
         try:
@@ -1441,7 +1452,7 @@ Example flow:
         # タイトルにエピソード番号を付与
         original_title = data.get('title', '')
         if not original_title.startswith('【#'):
-            data['title'] = f"【#{episode_num}】{original_title.removeprefix('【年金ニュース】')}"
+            data['title'] = f"【#{episode_num}】{original_title}"
         data['episode_number'] = episode_num
         
         data['description'] = f"{fixed_header}{timestamp_section}{summary_section}{points_section}{comment_section}{playlist_section}{sources_section}{fixed_footer}"[:1500]
@@ -2338,14 +2349,14 @@ Example flow:
         katsumi_intros = [
             "【カツミのぼやき】最近ね、韓国ドラマにハマっちゃってさ。「愛の不時着」見た？もう毎晩泣いてるわよ。孫に「ばあば、また泣いてる」って笑われるんだけど、いいのよ、泣ける作品に出会えるって幸せなことよ。",
             "【カツミのぼやき】昨日スーパーで卵が10個パック298円だったの。去年は198円だったのに...孫のお弁当に卵焼き入れてあげたいけど、なんだか複雑な気持ちよね。でもまぁ、健康でいられることが一番の節約よ。",
-            "【カツミのぼやき】商店街の山田さんがね、「カツミちゃん、最近元気ないわね」って言うのよ。元気よ！年金の情報調べてたら夜更かししちゃっただけなの。情報は武器よ、知らないと損するからね。",
+            "【カツミのぼやき】商店街の山田さんがね、「カツミちゃん、最近元気ないわね」って言うのよ。元気よ！いろいろ調べてたら夜更かししちゃっただけなの。情報は武器よ、知らないと損するからね。",
             "【カツミのぼやき】孫がね、「ばあば、推し活って知ってる？」って聞くから「知ってるわよ、私だって昔は西城秀樹のファンだったんだから！」って言ったら、ちょっと尊敬の目で見られたわ。嬉しかったわね。",
             "【カツミのぼやき】板橋の駄菓子屋が一軒また閉まったの。寂しいわよね。でもね、そこのおばちゃんが「カツミちゃん、あんたのこと忘れないわよ」って言ってくれてね、泣きそうになっちゃった。人のつながりって大事よね。",
             "【カツミのぼやき】朝のラジオ体操でね、隣のタカコさんが「カツミちゃん、今日のみんなの声見た？」って聞いてくるの。みんなちゃんとチェックしてるのよ。私たち世代にとっては死活問題だからね。",
-            "【カツミのぼやき】先週、新潟のおばあちゃんのお墓参りに行ってきたの。井戸でスイカ冷やしてくれた夏休み、思い出すと今でも鮮明よ。あの頃は年金のことなんて考えもしなかったわね。時間って不思議よね。",
+            "【カツミのぼやき】先週、新潟のおばあちゃんのお墓参りに行ってきたの。井戸でスイカ冷やしてくれた夏休み、思い出すと今でも鮮明よ。あの頃は老後のことなんて考えもしなかったわね。時間って不思議よね。",
             "【カツミのぼやき】最近ね、スマホの文字が小さくて困ってるの。孫に拡大の仕方教えてもらったんだけど、すぐ戻っちゃうのよ。でもこのチャンネルの字幕は大きくていいわよね。私が設計したんだけどね、えへへ。",
             "【カツミのぼやき】宝塚が好きなのよ、実は。若い頃は月組のファンでね、今でもテレビでやってると見ちゃうの。あの華やかさ、元気もらえるわよね。推しがいるって生きるエネルギーになるのよ。",
-            "【カツミのぼやき】正直ね、年金の制度って毎年ちょっとずつ変わるから追いかけるの大変なのよ。でもね、「知らなかった」で損するのが一番悔しいじゃない？だからこうやって毎日調べてるわけ。一緒に勉強しましょうね。",
+            "【カツミのぼやき】正直ね、いろんな制度って毎年ちょっとずつ変わるから追いかけるの大変なのよ。でもね、「知らなかった」で損するのが一番悔しいじゃない？だからこうやって毎日調べてるわけ。一緒に勉強しましょうね。",
         ]
         hiroshi_intros = [
             "【ヒロシのぼやき】昨日ね、久しぶりにスーファミのFF6やったんですよ。ティナのテーマ聴いたら泣けてきちゃって。奥さんに「いい歳して何泣いてんの」って言われたけど、名作は何回やっても名作なんですよ。",
@@ -2392,7 +2403,7 @@ Example flow:
             "script": script_with_frames,
             "durationInFrames": total_frames,
             "audioPath": os.path.basename(audio_path) if audio_path else "audio.wav",
-            "channelName": "年金生活うまくいってます？",
+            "channelName": self.channel_name,
             "channelColor": "#e74c3c",
             "source": content.get('source', ''),
             "backgroundImage": "background.png",
@@ -3116,7 +3127,7 @@ Example flow:
         
         prompt = f'''
 You are writing the EMOTIONAL CLIMAX of this YouTube show — the 控室トーク (backstage talk).
-The main show featured 1 real pension recipient's life story as a human documentary.
+The main show featured a real story about {self.channel_theme} as a human documentary.
 Now, in the backstage, カツミ and ヒロシ reflect deeply on that person's life.
 
 THIS IS NOT A NEWS SHOW. This is a HUMAN DOCUMENTARY show.
