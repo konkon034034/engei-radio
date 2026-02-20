@@ -122,8 +122,32 @@ class YouTubeUploader:
         try:
             creds = None
 
-            # === STEP 1: token.jsonの読み込み ===
-            if os.path.exists(TOKEN_FILE):
+            # === STEP 0: 環境変数から直接認証（D/E/F群対応） ===
+            env_client_id = os.environ.get('YOUTUBE_CLIENT_ID')
+            env_client_secret = os.environ.get('YOUTUBE_CLIENT_SECRET')
+            env_refresh_token = os.environ.get('YOUTUBE_REFRESH_TOKEN')
+
+            if env_client_id and env_client_secret and env_refresh_token:
+                self._log('INFO', '環境変数からOAuth認証情報を取得')
+                try:
+                    creds = Credentials(
+                        token=None,
+                        refresh_token=env_refresh_token,
+                        token_uri='https://oauth2.googleapis.com/token',
+                        client_id=env_client_id,
+                        client_secret=env_client_secret,
+                        scopes=SCOPES
+                    )
+                    creds.refresh(Request())
+                    self._log('SUCCESS', '環境変数からの認証成功')
+                    self._check_token_expiry(creds)
+                except Exception as e:
+                    self._log('ERROR', f'環境変数からの認証失敗: {e}')
+                    self._log('INFO', 'ファイルベース認証にフォールバック')
+                    creds = None
+
+            # === STEP 1: token.jsonの読み込み（フォールバック） ===
+            if not creds and os.path.exists(TOKEN_FILE):
                 self._log('INFO', f'既存のトークンを読み込み: {TOKEN_FILE}')
                 try:
                     creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
