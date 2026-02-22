@@ -1015,7 +1015,7 @@ The story follows a narrative arc (hero's journey): Background → Challenges �
 Based on the material above, create a compelling profile of 1 person related to {self.channel_theme}:
 1. Name (MUST be a completely ORIGINAL fictional pseudonym - 完全オリジナルの仮名を創作すること)
    ★★★ 絶対禁止: YouTube元動画の人物名をそのまま使うこと。著作権・プライバシー問題を避けるため、名前・経歴・エピソードは全てオリジナルに再構成すること ★★★
-2. Age, former occupation, pension amount (数字は参考素材を元に少し変更してよい)
+2. Age, former occupation, monthly income (数字は参考素材を元に少し変更してよい)
 3. Key life events (marriage, job loss, illness, spouse death, etc.)
 4. Current daily life (budget breakdown, hobbies, struggles)
 5. A "turning point" or dramatic moment in their life
@@ -1027,7 +1027,7 @@ Based on the material above, create a compelling profile of 1 person related to 
     "name": "完全オリジナルの仮名（例: 中村さん、鈴木さん等。元動画の名前は使用禁止）",
     "age": 68,
     "former_job": "元の職業",
-    "pension_amount": "月○万円",
+    "monthly_income": "月○万円",
     "living_situation": "一人暮らし/夫婦 etc.",
     "key_episode": "人生の転機となったエピソード"
   }},
