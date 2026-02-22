@@ -46,13 +46,17 @@ jobs:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         YOUTUBE_CLIENT_SECRETS: ${{ secrets.YOUTUBE_CLIENT_SECRETS }}
+        YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+        YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
         XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
       run: |
         set -e
         [ -z "$GOOGLE_API_KEYS" ] && echo "ERROR: GOOGLE_API_KEYS not set" && exit 1
         [ -z "$AWS_ACCESS_KEY_ID" ] && echo "WARN: AWS_ACCESS_KEY_ID not set (Polly fallback disabled, Edge TTS primary)"
         [ -z "$AWS_SECRET_ACCESS_KEY" ] && echo "WARN: AWS_SECRET_ACCESS_KEY not set (Polly fallback disabled, Edge TTS primary)"
-        [ -z "$YOUTUBE_CLIENT_SECRETS" ] && echo "ERROR: YOUTUBE_CLIENT_SECRETS not set" && exit 1
+        if [ -z "$YOUTUBE_CLIENT_SECRETS" ] && [ -z "$YOUTUBE_CLIENT_ID" ]; then
+          echo "ERROR: YouTube認証なし (YOUTUBE_CLIENT_SECRETS or YOUTUBE_CLIENT_ID が必要)" && exit 1
+        fi
         [ -z "$XAI_API_KEY" ] && echo "WARN: XAI_API_KEY not set (X search disabled)"
         echo "[OK] All required environment variables are set"
 
@@ -94,21 +98,38 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: ${{ secrets.AWS_REGION }}
         YOUTUBE_CLIENT_SECRETS: ${{ secrets.YOUTUBE_CLIENT_SECRETS }}
+        YOUTUBE_CLIENT_ID: ${{ secrets.YOUTUBE_CLIENT_ID }}
+        YOUTUBE_CLIENT_SECRET: ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+        YOUTUBE_REFRESH_TOKEN: ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
         YOUTUBE_TOKEN_BASE64: ${{ secrets.YOUTUBE_TOKEN_BASE64 }}
         YOUTUBE_PLAYLIST_IDS: ${{ secrets.YOUTUBE_PLAYLIST_IDS }}
         SKIP_YOUTUBE_UPLOAD: ${{ steps.dice.outputs.skip_upload }}
         XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
       run: |
         set -e
-        echo "$YOUTUBE_CLIENT_SECRETS" > client_secrets.json || {
-          echo "Failed to write client_secrets.json" >&2
-          exit 1
-        }
+        # YouTube認証: 形式A(CLIENT_SECRETS JSON) or 形式B(CLIENT_ID+SECRET個別値)
+        if [ -n "$YOUTUBE_CLIENT_SECRETS" ]; then
+          echo "$YOUTUBE_CLIENT_SECRETS" > client_secrets.json
+          echo "[AUTH] 形式A: YOUTUBE_CLIENT_SECRETS使用"
+        elif [ -n "$YOUTUBE_CLIENT_ID" ]; then
+          cat > client_secrets.json << EOJSON
+        {"installed":{"client_id":"$YOUTUBE_CLIENT_ID","client_secret":"$YOUTUBE_CLIENT_SECRET","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","redirect_uris":["http://localhost"]}}
+        EOJSON
+          echo "[AUTH] 形式B: YOUTUBE_CLIENT_ID+SECRET使用"
+        else
+          echo "[WARN] YouTube認証情報なし。アップロードはスキップされます"
+        fi
+        # トークン: 形式A(TOKEN_BASE64) or 形式B(REFRESH_TOKEN)
         if [ -n "$YOUTUBE_TOKEN_BASE64" ]; then
-          echo "$YOUTUBE_TOKEN_BASE64" | base64 -d > token.json || {
-            echo "Failed to decode YOUTUBE_TOKEN_BASE64" >&2
-            exit 1
-          }
+          echo "$YOUTUBE_TOKEN_BASE64" | base64 -d > token.json
+          echo "[AUTH] TOKEN_BASE64からtoken.json生成"
+        elif [ -n "$YOUTUBE_REFRESH_TOKEN" ] && [ -n "$YOUTUBE_CLIENT_ID" ]; then
+          cat > token.json << EOJSON
+        {"token":"","refresh_token":"$YOUTUBE_REFRESH_TOKEN","token_uri":"https://oauth2.googleapis.com/token","client_id":"$YOUTUBE_CLIENT_ID","client_secret":"$YOUTUBE_CLIENT_SECRET","scopes":["https://www.googleapis.com/auth/youtube","https://www.googleapis.com/auth/youtube.upload","https://www.googleapis.com/auth/youtube.force-ssl"]}
+        EOJSON
+          echo "[AUTH] REFRESH_TOKENからtoken.json生成"
+        else
+          echo "[WARN] YouTubeトークンなし。アップロードはスキップされます"
         fi
         python src/main.py --prod --remotion
 
