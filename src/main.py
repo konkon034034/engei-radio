@@ -1852,7 +1852,7 @@ Warm, nostalgic, inviting feeling. Simple clear compositions. 16:9 landscape asp
 
             client = genai.Client(api_key=api_keys[0].strip())
             response = client.models.generate_content(
-                model="gemini-2.0-flash-exp",
+                model="gemini-2.0-flash",
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     response_modalities=["IMAGE", "TEXT"],
@@ -1929,7 +1929,7 @@ STYLE:
 - The text MUST be the dominant visual element (largest thing on the image)"""
 
             response = self.client.models.generate_content(
-                model="gemini-2.0-flash-exp",
+                model="gemini-2.0-flash",
                 contents=chalk_prompt,
                 config=types.GenerateContentConfig(
                     response_modalities=["IMAGE", "TEXT"],
