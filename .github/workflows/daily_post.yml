@@ -1,28 +1,174 @@
 name: Daily Post
+
 on:
-  # schedule:
-  #   - cron: '30 4 * * *'
-  workflow_dispatch:
+  schedule:
+    # 毎日 08:00 JST (23:00 UTC 前日)
+    - cron: '0 23 * * *'
+  workflow_dispatch: # 手動実行も可能にする
+    inputs:
+      force_manual_day:
+        description: '強制的に手動アップロード日にする (true/false)'
+        required: false
+        default: 'false'
+        type: string
+  # Schedule refresh: 2026-02-07
 
 jobs:
   build_and_post:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 90  # 1.5時間でタイムアウト
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          lfs: true
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - run: pip install -r requirements.txt
-      - run: cd remotion && npm install
-      - run: python src/main.py --prod --remotion
-        env:
-          GOOGLE_API_KEYS: ${{ secrets.GOOGLE_API_KEYS }}
-          CHANNEL_THEME: '園芸'
-          CHANNEL_NAME: '園芸ラジオ'
-          CHANNEL_COLOR: '#2ecc71'
+    - name: Random delay (0-2 minutes)
+      run: |
+        DELAY=$((RANDOM % 120))
+        echo "Waiting $DELAY seconds before starting..."
+        sleep $DELAY
+
+    # サイコロ判定（無効化：常に自動アップロード）
+    - name: Roll dice for manual upload day
+      id: dice
+      run: |
+        # 手動アップロード日機能を無効化 - 常に自動アップロード
+        echo "自動アップロード（手動日機能は無効化済み）"
+        echo "skip_upload=false" >> $GITHUB_OUTPUT
+        echo "roll=DISABLED" >> $GITHUB_OUTPUT
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Check required environment variables
+      env:
+        GOOGLE_API_KEYS: ${{ secrets.GOOGLE_API_KEYS }}
+        CHANNEL_THEME: '園芸'
+        CHANNEL_NAME: '園芸ラジオ'
+        CHANNEL_COLOR: '#27ae60'
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        YOUTUBE_CLIENT_SECRETS: ${{ secrets.YOUTUBE_CLIENT_SECRETS }}
+        XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+      run: |
+        set -e
+        [ -z "$GOOGLE_API_KEYS" ] && echo "ERROR: GOOGLE_API_KEYS not set" && exit 1
+        [ -z "$AWS_ACCESS_KEY_ID" ] && echo "WARN: AWS_ACCESS_KEY_ID not set (Polly fallback disabled, Edge TTS primary)"
+        [ -z "$AWS_SECRET_ACCESS_KEY" ] && echo "WARN: AWS_SECRET_ACCESS_KEY not set (Polly fallback disabled, Edge TTS primary)"
+        [ -z "$YOUTUBE_CLIENT_SECRETS" ] && echo "ERROR: YOUTUBE_CLIENT_SECRETS not set" && exit 1
+        [ -z "$XAI_API_KEY" ] && echo "WARN: XAI_API_KEY not set (X search disabled)"
+        echo "[OK] All required environment variables are set"
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install Remotion dependencies
+      run: |
+        cd remotion
+        npm install
+
+    - name: Install Chromium for Remotion
+      run: |
+        npx @puppeteer/browsers install chrome@stable
+        echo "PUPPETEER_EXECUTABLE_PATH=$(find $HOME -name 'chrome' -type f | head -1)" >> $GITHUB_ENV
+
+    - name: Run video generation
+      env:
+        GOOGLE_API_KEYS: ${{ secrets.GOOGLE_API_KEYS }}
+        CHANNEL_THEME: '園芸'
+        CHANNEL_NAME: '園芸ラジオ'
+        CHANNEL_COLOR: '#27ae60'
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ${{ secrets.AWS_REGION }}
+        YOUTUBE_CLIENT_SECRETS: ${{ secrets.YOUTUBE_CLIENT_SECRETS }}
+        YOUTUBE_TOKEN_BASE64: ${{ secrets.YOUTUBE_TOKEN_BASE64 }}
+        YOUTUBE_PLAYLIST_IDS: ${{ secrets.YOUTUBE_PLAYLIST_IDS }}
+        SKIP_YOUTUBE_UPLOAD: ${{ steps.dice.outputs.skip_upload }}
+        XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+      run: |
+        set -e
+        echo "$YOUTUBE_CLIENT_SECRETS" > client_secrets.json || {
+          echo "Failed to write client_secrets.json" >&2
+          exit 1
+        }
+        if [ -n "$YOUTUBE_TOKEN_BASE64" ]; then
+          echo "$YOUTUBE_TOKEN_BASE64" | base64 -d > token.json || {
+            echo "Failed to decode YOUTUBE_TOKEN_BASE64" >&2
+            exit 1
+          }
+        fi
+        python src/main.py --prod --remotion
+
+    - name: Upload artifact (optional)
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: output-video
+        path: output/
+
+    # 手動アップロード日専用：アセットをArtifactにアップロード
+    - name: Upload manual upload assets
+      if: steps.dice.outputs.skip_upload == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: manual-upload-${{ github.run_id }}
+        path: |
+          output/*.mp4
+          output/*.png
+          output/metadata.txt
+          output/first_comment.txt
+          output/community_post.txt
+        retention-days: 7
+
+    # 手動アップロード日：Discord通知
+    - name: Notify Discord (manual upload day)
+      if: steps.dice.outputs.skip_upload == 'true'
+      env:
+        DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+      run: |
+        if [ -z "$DISCORD_WEBHOOK_URL" ]; then
+          echo "DISCORD_WEBHOOK_URL not set, skipping notification"
+          exit 0
+        fi
+
+        # メタデータ読み込み
+        TITLE=$(head -1 output/metadata.txt 2>/dev/null || echo "タイトル不明")
+        DESCRIPTION=$(sed -n '/--- 説明文 ---/,/--- タグ ---/p' output/metadata.txt 2>/dev/null | head -8 | tail -7 | tr '\n' ' ' || echo "説明文なし")
+        TAGS=$(sed -n '/--- タグ ---/,$ p' output/metadata.txt 2>/dev/null | tail -1 || echo "")
+        COMMUNITY=$(cat output/community_post.txt 2>/dev/null | tr '\n' ' ' || echo "")
+        FIRST_COMMENT=$(cat output/first_comment.txt 2>/dev/null | tr '\n' ' ' || echo "")
+        REPLY_TEMPLATES=$(cat output/comment_reply_templates.txt 2>/dev/null | tr '\n' '|' | sed 's/|/\\n/g' || echo "")
+
+        # Discord通知送信
+        curl -H "Content-Type: application/json" \
+          -d "{
+            \"embeds\": [{
+              \"title\": \"手動アップロード日 - engei-radio (園芸)\",
+              \"color\": 16753920,
+              \"fields\": [
+                {\"name\": \"タイトル\", \"value\": \"${TITLE}\", \"inline\": false},
+                {\"name\": \"概要欄\", \"value\": \"${DESCRIPTION:0:500}\", \"inline\": false},
+                {\"name\": \"タグ\", \"value\": \"${TAGS}\", \"inline\": false},
+                {\"name\": \"初コメント\", \"value\": \"${FIRST_COMMENT:0:300}\", \"inline\": false},
+                {\"name\": \"コミュニティ投稿用テキスト\", \"value\": \"${COMMUNITY:0:500}\", \"inline\": false},
+                {\"name\": \"コメント返信テンプレート\", \"value\": \"${REPLY_TEMPLATES:0:500}\", \"inline\": false},
+                {\"name\": \"ダウンロード\", \"value\": \"[動画・サムネイル・テキスト・画像](https://github.com/konkon034034/engei-radio/actions/runs/${{ github.run_id }})\", \"inline\": false}
+              ]
+            }]
+          }" \
+          "$DISCORD_WEBHOOK_URL"
+
+        echo "Discord通知送信完了"
