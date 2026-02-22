@@ -84,9 +84,10 @@ export const DataOverlay: React.FC<{
         top: compact ? 0 : 10,
         left: compact ? "50%" : 310,
         width: compact ? "50%" : 1300,
-        height: compact ? compactHeight : 640,
+        height: compact ? "auto" : 640,
+        maxHeight: compact ? compactHeight : undefined,
         padding: compact ? "6px 10px" : "12px 16px",
-        backgroundColor: "rgba(0, 0, 0, 0.85)",
+        backgroundColor: compact ? "#000000" : "rgba(0, 0, 0, 0.85)",
         borderRadius: compact ? 0 : 16,
         opacity: finalOpacity,
         borderLeft: compact ? "none" : `6px solid ${sentimentColor}`,
@@ -178,7 +179,7 @@ export const DataOverlay: React.FC<{
         return (
             <div style={containerStyle}>
                 <div style={labelStyle}>{chartData.label}</div>
-                {chartData.subtitle && <div style={subtitleStyle}>{chartData.subtitle}</div>}
+                {chartData.subtitle && chartData.subtitle !== chartData.label && <div style={subtitleStyle}>{chartData.subtitle}</div>}
                 <div style={{ display: "flex", alignItems: "baseline", justifyContent: "center", gap: compact ? 6 : 12, marginTop: compact ? 16 : "auto", flexWrap: compact ? "wrap" : "nowrap" }}>
                     <span style={{
                         ...valueStyle,

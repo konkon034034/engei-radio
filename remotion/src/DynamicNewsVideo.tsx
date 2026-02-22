@@ -450,6 +450,18 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
     const isEndingSection = currentLine?.section === "ending" || currentLine?.section === "hikaeshitsu" || currentLine?.section === "hikaeshitsu_jingle";
     const isHikaeshitsu = currentLine?.section === "hikaeshitsu" || currentLine?.section === "hikaeshitsu_jingle";
 
+    // チャート表示中かどうか（ティッカー非表示用）
+    const isChartVisible = (() => {
+        if (!chartData) return false;
+        for (let ci = chartData.length - 1; ci >= 0; ci--) {
+            if (frame >= chartData[ci].triggerFrame) {
+                const nt = ci < chartData.length - 1 ? chartData[ci + 1].triggerFrame : Infinity;
+                return frame < nt;
+            }
+        }
+        return false;
+    })();
+
     const barHeight = height * 0.40;
     const barY = height - barHeight;
 
@@ -609,19 +621,20 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                 return (
                     <AbsoluteFill style={{ backgroundColor: "#000000", zIndex: 1000, display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <div style={{
-                            fontFamily, fontSize: 500, fontWeight: "bold",
-                            color: "#ffff00", textShadow: "10px 10px 30px rgba(0,0,0,0.9)",
+                            fontFamily, fontSize: 120, fontWeight: "bold",
+                            color: "#ffffff", textShadow: "4px 4px 20px rgba(0,0,0,0.9)",
                             textAlign: "center", lineHeight: 1.2,
                             opacity: textOpacity,
+                            letterSpacing: 24,
                         }}>
-                            控室にて
+                            控 室 に て
                         </div>
                     </AbsoluteFill>
                 );
             })()}
 
-            {/* ティッカー（本編のみ表示、控室は非表示） */}
-            {frame >= slideDuration && !isEndingSection && <Ticker durationInFrames={durationInFrames} texts={[title, ...(keyPoints || [])]} />}
+            {/* ティッカー（本編のみ表示、控室・チャート表示中は非表示） */}
+            {frame >= slideDuration && !isEndingSection && !isChartVisible && <Ticker durationInFrames={durationInFrames} texts={[title, ...(keyPoints || [])]} />}
 
             {/* トピックポイント: 削除（チャート・音声とのタイミング同期が不可能なため
                間違った情報表示より非表示が正解） */}
@@ -665,33 +678,25 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                     : Infinity;
                 if (frame >= nextTrigger) return null;
 
-                const fadeIn = interpolate(frame - cd.triggerFrame, [0, 15], [0, 1], { extrapolateRight: "clamp" });
+                // フラッシュ防止: opacityフェードではなくスライドインで切替
+                const slideIn = interpolate(frame - cd.triggerFrame, [0, 12], [40, 0], { extrapolateRight: "clamp" });
+                const fadeIn = interpolate(frame - cd.triggerFrame, [0, 8], [0, 1], { extrapolateRight: "clamp" });
                 const panelHeight = barY - 4; // 透過バーの上端まで
 
                 return (
                     <>
-                        {/* ===== 左パネル: チョーク風画像 + タイトル + キャプション ===== */}
+                        {/* ===== 左パネル: チョーク風画像（キャプション削除=DataOverlayと重複防止） ===== */}
                         <div style={{
                             position: "absolute", top: 0, left: 0,
                             width: "50%", height: panelHeight,
-                            backgroundColor: "rgba(0, 0, 0, 0.85)",
+                            backgroundColor: "#000000",
                             zIndex: 100,
                             display: "flex", flexDirection: "column",
-                            opacity: fadeIn, overflow: "hidden",
+                            opacity: fadeIn,
+                            transform: `translateX(${-slideIn}px)`,
+                            overflow: "hidden",
                             boxSizing: "border-box",
                         }}>
-                            {/* キャプション（人物紹介テキスト・大きく表示） */}
-                            <div style={{
-                                padding: "10px 16px 6px 16px",
-                                fontFamily, fontSize: 48, fontWeight: 900,
-                                color: "#FFD700",
-                                lineHeight: 1.3,
-                                flexShrink: 0,
-                                wordBreak: "keep-all" as const,
-                                overflowWrap: "break-word" as const,
-                            }}>
-                                {cd.data.subtitle || ""}
-                            </div>
                             {/* チョーク画像 */}
                             <div style={{
                                 flex: 1, width: "100%",
@@ -822,11 +827,11 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                 />
             )}
 
-            {/* 吹き出しアイコン（6種の感情のみ） */}
-            {currentLine && getEmotionBubbleImage(currentLine.emotion) && (
+            {/* 吹き出しアイコン（キャラの上に表示） */}
+            {currentLine && getEmotionBubbleImage(currentLine.emotion) && !isHikaeshitsu && (
                 <>
                     {currentLine.speaker === "カツミ" && (
-                        <div style={{ position: "absolute", top: 100, left: 100, width: 150, height: 150 }}>
+                        <div style={{ position: "absolute", bottom: 230, left: 30, width: 100, height: 100, zIndex: 51 }}>
                             <Img
                                 src={staticFile(`emotions/${getEmotionBubbleImage(currentLine.emotion)}`)}
                                 style={{ width: "100%", height: "100%", objectFit: "contain" }}
@@ -834,7 +839,7 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                         </div>
                     )}
                     {currentLine.speaker === "ヒロシ" && (
-                        <div style={{ position: "absolute", top: 100, right: 100, width: 150, height: 150 }}>
+                        <div style={{ position: "absolute", bottom: 230, right: 30, width: 100, height: 100, zIndex: 51 }}>
                             <Img
                                 src={staticFile(`emotions/${getEmotionBubbleImage(currentLine.emotion)}`)}
                                 style={{ width: "100%", height: "100%", objectFit: "contain" }}

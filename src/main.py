@@ -1234,7 +1234,7 @@ CRITICAL REQUIREMENT - SCRIPT LENGTH:
 
 ## OUTPUT FORMAT (JSON)
 {{
-  "title": "SEO最適化タイトル（【{self.channel_theme}】+衝撃フック）",
+  "title": "SEOバズりタイトル（【{self.channel_theme}】+具体的数字+感情フック。例:【年金】月○万円で暮らす○歳…衝撃の実態）",
   "source": "出典元",
   "summary": "今日のテーマ要約",
   "key_points": ["ポイント1", "ポイント2", "ポイント3"],
@@ -1419,7 +1419,7 @@ Example flow:
 
 ## OUTPUT FORMAT (JSON)
 {{
-  "title": "SEO最適化タイトル（TITLE RULES準拠）",
+  "title": "SEOバズりタイトル（【{self.channel_theme}】+具体的数字+感情フック。YouTube検索で上位表示されるよう工夫）",
   "source": "出典元",
   "summary": "今日のストーリー要約",
   "key_points": ["この人の印象的なポイント1", "統計との比較ポイント", "学べる教訓"],
@@ -2525,8 +2525,8 @@ STYLE:
                     return "bar"
                 return "number"
 
-            def extract_context_label(full_text, match_start, max_len=20):
-                """台本テキストからチャートラベルを抽出（文脈重視・意味のある文を返す）"""
+            def extract_context_label(full_text, match_start, max_len=15):
+                """台本テキストからチャートラベルを抽出（短く意味の通るフレーズ）"""
                 prefix = full_text[:match_start].strip()
                 # 直前の文を取得（。！？で区切り）
                 segments = re.split(r"[。！？\n]", prefix)
@@ -2536,21 +2536,23 @@ STYLE:
                     cleaned = segments[-2].strip()
                 if not cleaned:
                     cleaned = prefix[-max_len:].strip()
-                # 助詞で終わる場合は後方テキスト（数値+単位）も含める
-                suffix = full_text[match_start : match_start + 20].strip()
-                num_unit = re.match(r"[\d０-９,，\.]+\s*(万\s*円|円|%|％|万\s*人|人|割)", suffix)
-                if num_unit and re.search(r"[はがをにでの]$", cleaned):
-                    cleaned += suffix[: num_unit.end()]
+                # 助詞で終わる場合は助詞を削除して名詞句にする
+                cleaned = re.sub(r"[はがをにでのもへと]+$", "", cleaned).strip()
+                # 読点で分割して最後の意味ある部分だけ取る
                 if len(cleaned) > max_len:
                     parts = cleaned.split("、")
-                    cleaned = parts[-1].strip() if len(parts[-1]) >= 5 else "、".join(parts[-2:]).strip()
+                    cleaned = parts[-1].strip() if len(parts[-1]) >= 4 else "、".join(parts[-2:]).strip()
                 if len(cleaned) > max_len:
+                    # 最後のmax_len文字を取り、先頭が途中なら最初の助詞以降を使う
                     cleaned = cleaned[-max_len:]
-                # フォールバック: テキスト全体の先頭部分を使う（曖昧なラベルより情報密度が高い）
+                    cut = re.search(r"[はがをにでのもへと]", cleaned)
+                    if cut and cut.start() < 4:
+                        cleaned = cleaned[cut.end():]
+                # フォールバック: テキスト全体の先頭部分
                 if not cleaned or len(cleaned) < 3:
-                    # テキスト全体から意味のある先頭部分を取得
                     fallback = re.sub(r"「[^」]*」", "", full_text).strip()
                     fallback = re.split(r"[。！？\n]", fallback)[0].strip()
+                    fallback = re.sub(r"[はがをにでのもへと]+$", "", fallback).strip()
                     if len(fallback) > max_len:
                         fallback = fallback[:max_len]
                     return fallback if len(fallback) >= 3 else None
