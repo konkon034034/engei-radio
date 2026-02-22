@@ -1,7 +1,7 @@
 /**
  * DataOverlay.tsx
  * 数値データをアニメーションチャートとして表示するコンポーネント
- * 
+ *
  * 8タイプ対応:
  * - bar: 棒グラフ（横バーが伸びる）
  * - number: 数値カウントアップ
@@ -53,7 +53,8 @@ export const DataOverlay: React.FC<{
     startFrame: number;
     channelColor: string;
     compact?: boolean;
-}> = ({ chartData, startFrame, channelColor, compact }) => {
+    panelHeight?: number;
+}> = ({ chartData, startFrame, channelColor, compact, panelHeight }) => {
     const frame = useCurrentFrame();
     const elapsed = frame - startFrame;
 
@@ -75,34 +76,32 @@ export const DataOverlay: React.FC<{
     // ラベルからセンチメント色を取得
     const sentimentColor = getSentimentColor(chartData.label, channelColor);
 
-    // 共通コンテナスタイル（キャラクター間の黒板パネル）
-    // カツミ(left:0, 幅約200px) と ヒロシ(right:0, 幅約200px) にかぶらない領域
-    // キャラ実測: カツミ右端=280px, ヒロシ左端=1640px → 使用可能エリア=1360px
-    // compact時: 黄金比38.2:61.8 → 左520px, 右840px
-    // non-compact時: 使用可能エリアの中央に配置（左右均等マージン）
+    // compact時: 画面右半分(50%)に配置、95%使用・余白5%以内
+    // 質問/問いかけ問題文は右上に配置
+    const compactHeight = panelHeight || 640;
     const containerStyle: React.CSSProperties = {
         position: "absolute",
-        top: 10,
-        left: compact ? 280 : 310,
-        width: compact ? 520 : 1300,
-        height: compact ? 640 : 640,
-        padding: compact ? "20px 18px" : "12px 16px",
+        top: compact ? 0 : 10,
+        left: compact ? "50%" : 310,
+        width: compact ? "50%" : 1300,
+        height: compact ? compactHeight : 640,
+        padding: compact ? "6px 10px" : "12px 16px",
         backgroundColor: "rgba(0, 0, 0, 0.85)",
-        borderRadius: 16,
+        borderRadius: compact ? 0 : 16,
         opacity: finalOpacity,
-        borderLeft: `6px solid ${sentimentColor}`,
+        borderLeft: compact ? "none" : `6px solid ${sentimentColor}`,
         zIndex: 100,
         boxSizing: "border-box",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
-        justifyContent: compact ? "center" : "space-between",
-        alignItems: compact ? "center" : "stretch",
+        justifyContent: compact ? "flex-start" : "space-between",
+        alignItems: compact ? "stretch" : "stretch",
     };
 
-    // ラベルの長さに応じてフォントサイズを自動調整（コンテナ1320x640に収まる範囲）
+    // ラベルの長さに応じてフォントサイズを自動調整
     const labelFontSize = compact
-        ? (chartData.label.length <= 6 ? 56 : chartData.label.length <= 10 ? 46 : 38)
+        ? (chartData.label.length <= 6 ? 72 : chartData.label.length <= 10 ? 60 : chartData.label.length <= 14 ? 50 : 42)
         : (chartData.label.length <= 6 ? 100
             : chartData.label.length <= 10 ? 80
                 : chartData.label.length <= 14 ? 68
@@ -112,9 +111,9 @@ export const DataOverlay: React.FC<{
 
     const labelStyle: React.CSSProperties = {
         fontFamily, fontSize: labelFontSize, fontWeight: 900,
-        color: "#ffffff", marginBottom: compact ? 12 : 4,
+        color: "#ffffff", marginBottom: compact ? 8 : 4,
         lineHeight: 1.15, wordBreak: "keep-all", overflowWrap: "break-word",
-        textAlign: compact ? "center" as const : "left" as const,
+        textAlign: compact ? "left" as const : "left" as const,
     };
 
     // subtitle（ビフォーアフター・補足情報）スタイル
@@ -471,8 +470,9 @@ export const DataOverlay: React.FC<{
                             transform: `translateX(${(1 - itemProgress) * 60}px)`,
                         }}>
                             <div style={{
-                                display: "flex", justifyContent: "space-between",
+                                display: "flex", justifyContent: "flex-start",
                                 alignItems: "baseline", marginBottom: 2,
+                                gap: 8, flexWrap: "wrap",
                             }}>
                                 <span style={{
                                     fontFamily, fontSize: isTop ? pollLabelSize * 1.2 : pollLabelSize,

@@ -46,6 +46,7 @@ export const RemotionRoot: React.FC = () => {
                     hikaeshitsuJingle: inputProps.hikaeshitsuJingle || "hikaeshitsu_jingle.mp3",
                     subtitleStyle: inputProps.subtitleStyle || "highlight",
                     subtitleColor: inputProps.subtitleColor || "rgba(220,140,30,0.5)",
+                    jakuchoQuote: inputProps.jakuchoQuote || "いくつになっても\n恋愛感情がなくなったわけでは\nないんです。\nただ、その表現の仕方が\n変わってきただけ。",
                     chartData: inputProps.chartData || [
                         { triggerFrame: 30, data: { type: "poll" as const, label: "年金受給開始年齢、あなたは？", value: 0, unit: "", items: [{ label: "60歳から", value: 25 }, { label: "65歳から", value: 45 }, { label: "70歳から", value: 20 }, { label: "まだ決めてない", value: 10 }] } },
                         { triggerFrame: 270, data: { type: "poll" as const, label: "この政策、賛成？反対？", value: 0, unit: "", items: [{ label: "賛成", value: 42 }, { label: "どちらとも言えない", value: 35 }, { label: "反対", value: 23 }] } },

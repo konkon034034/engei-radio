@@ -1,7 +1,7 @@
 /**
  * DynamicNewsVideo.tsx
  * カツミ・ヒロシみんなの声チャンネル動画コンポーネント v11 - チャート切替SE3種追加
- * 
+ *
  * 機能:
  * - オープニング/控室スライド + ジングル
  * - キャラクター感情連動表示（3種: neutral, guts, yareyare）
@@ -63,6 +63,7 @@ interface DynamicNewsVideoProps {
     householdBudget?: HouseholdBudgetData;
     checklist?: ChecklistData;
     listenerLetter?: ListenerLetterData;
+    jakuchoQuote?: string;
 }
 
 
@@ -256,7 +257,7 @@ const Ticker: React.FC<{ durationInFrames: number; texts?: string[] }> = ({ dura
 
 
 
-/** キャラクター表示（感情連動） */
+/** キャラクター表示（字幕エリア内アイコン） */
 const Character: React.FC<{
     baseName: string;
     name: string;
@@ -265,28 +266,23 @@ const Character: React.FC<{
     emotion: string;
 }> = ({ baseName, name, position, isActive, emotion }) => {
     const frame = useCurrentFrame();
-    const bounce = isActive ? Math.sin(frame * 0.5) * 6 : 0;
+    const bounce = isActive ? Math.sin(frame * 0.5) * 3 : 0;
     const imagePath = getEmotionImage(baseName, emotion);
 
     return (
         <div style={{
-            position: "absolute", top: 200, [position]: 0,
+            position: "absolute", bottom: 85, [position]: 5,
             transform: `translateY(${bounce}px)`, textAlign: "center",
+            zIndex: 50,
         }}>
             <Img
                 src={staticFile(imagePath)}
                 style={{
-                    height: 280,
+                    height: 140,
                     filter: isActive ? "none" : "brightness(0.75)",
-                    borderRadius: 8,
+                    borderRadius: 6,
                 }}
             />
-            <div style={{
-                marginTop: 4, fontFamily, fontSize: 32, fontWeight: "bold",
-                color: "#ffffff", textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
-            }}>
-                {name}
-            </div>
         </div>
     );
 };
@@ -311,7 +307,7 @@ const SubtitleLine: React.FC<{
         return (
             <div style={{
                 opacity: fadeIn,
-                position: "absolute", top: barY + 30, left: 170, right: 170,
+                position: "absolute", top: barY + 30, left: 220, right: 170,
                 fontFamily, fontSize: line.text.length > 30 ? 72 : line.text.length > 20 ? 82 : 95, fontWeight: "bold",
                 color: baseColor,
                 textShadow: "4px 4px 10px rgba(0,0,0,0.95)", textAlign: "left",
@@ -341,7 +337,7 @@ const SubtitleLine: React.FC<{
         return (
             <div style={{
                 opacity: fadeIn * (0.4 + boldProgress * 0.6),
-                position: "absolute", top: barY + 30, left: 170, right: 170,
+                position: "absolute", top: barY + 30, left: 220, right: 170,
                 fontFamily, fontSize: line.text.length > 30 ? 72 : line.text.length > 20 ? 82 : 95, fontWeight: 900,
                 color: baseColor,
                 textShadow: "4px 4px 10px rgba(0,0,0,0.95)",
@@ -382,7 +378,7 @@ const SubtitleLine: React.FC<{
     return (
         <div style={{
             opacity: fadeIn,
-            position: "absolute", top: barY + 30, left: 170, right: 170,
+            position: "absolute", top: barY + 30, left: 220, right: 170,
             fontFamily, fontSize: subtitleFontSize, fontWeight: "bold",
             color: baseColor,
             textShadow: "4px 4px 10px rgba(0,0,0,0.95)", textAlign: "left",
@@ -441,13 +437,14 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
     householdBudget,
     checklist,
     listenerLetter,
+    jakuchoQuote,
 }) => {
     const frame = useCurrentFrame();
     const { durationInFrames, height } = useVideoConfig();
 
-    // 懸念1対策: chartDataにpoll(items)がなければクイズintroスキップ → slideDuration=0
-    const hasQuizData = chartData && chartData.length > 0 && chartData.some(cd => cd.data?.items?.length > 0);
-    const slideDuration = hasQuizData ? rawSlideDuration : 0;
+    // 瀬戸内寂聴名言がある場合はOPスライド表示、なければスキップ
+    const hasJakuchoQuote = !!jakuchoQuote;
+    const slideDuration = hasJakuchoQuote ? rawSlideDuration : 0;
 
     const currentLine = script.find(line => frame >= line.startFrame && frame < line.endFrame);
     const isEndingSection = currentLine?.section === "ending" || currentLine?.section === "hikaeshitsu" || currentLine?.section === "hikaeshitsu_jingle";
@@ -482,66 +479,101 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                 <Audio src={staticFile("main_bgm.mp3")} volume={0.1} loop />
             </Sequence>
 
-            {/* ===== 冒頭クイズintro（Sequence化: slideDurationフレーム間） ===== */}
-            {slideDuration > 0 && hasQuizData && (() => {
-                const quizSource = chartData!.find(cd => cd.data?.items?.length > 0)?.data;
-                if (!quizSource || !quizSource.items) return null;
+            {/* ===== 冒頭: 瀬戸内寂聴名言スライド ===== */}
+            {slideDuration > 0 && hasJakuchoQuote && (() => {
+                const quoteText = jakuchoQuote || "いくつになっても\n恋愛感情がなくなったわけでは\nないんです。\nただ、その表現の仕方が\n変わってきただけ。";
 
-                const sorted = [...quizSource.items].sort((a, b) => b.value - a.value);
-                const quizItems = sorted.map((item, idx) =>
-                    idx === 0 ? { label: "？？？", value: item.value } : { ...item }
-                );
-                const quizChartData = { ...quizSource, items: quizItems };
-
-                const titleOpacity = interpolate(frame, [0, 12], [0, 1], { extrapolateRight: "clamp" });
-                const titleScale = interpolate(frame, [0, 12], [0.8, 1], { extrapolateRight: "clamp" });
-                const questionOpacity = interpolate(frame, [24, 36], [0, 1], { extrapolateRight: "clamp" });
-                const chartOpacity = interpolate(frame, [48, 60], [0, 1], { extrapolateRight: "clamp" });
-                const answerOpacity = interpolate(frame, [96, 108], [0, 1], { extrapolateRight: "clamp" });
-                const answerScale = interpolate(frame, [96, 108], [0.9, 1], { extrapolateRight: "clamp" });
+                const iconOpacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: "clamp" });
+                const iconScale = interpolate(frame, [0, 20], [0.8, 1], { extrapolateRight: "clamp" });
+                const textOpacity = interpolate(frame, [20, 40], [0, 1], { extrapolateRight: "clamp" });
+                const subtitleOpacity = interpolate(frame, [50, 65], [0, 1], { extrapolateRight: "clamp" });
+                const fadeOut = interpolate(frame, [slideDuration - 15, slideDuration], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
                 return (
                     <Sequence from={0} durationInFrames={slideDuration}>
-                        <AbsoluteFill style={{ backgroundColor: "#111122", zIndex: 1000 }}>
-                            <Audio src={staticFile("quiz_jingle.mp3")} volume={0.3} />
+                        <AbsoluteFill style={{ backgroundColor: "#0a0a0a", zIndex: 1000, opacity: fadeOut }}>
+                            <Audio src={staticFile("main_jingle.mp3")} volume={0.3} />
 
+                            {/* 上部: 瀬戸内寂聴アイコン(左) + 名言テキスト(右) */}
                             <div style={{
-                                position: "absolute", top: 40, left: 0, right: 0,
-                                textAlign: "center", zIndex: 1002,
-                                transform: `scale(${titleScale})`,
-                                opacity: titleOpacity,
+                                position: "absolute", top: 60, left: 60, right: 60, bottom: 320,
+                                display: "flex", flexDirection: "row", alignItems: "center",
+                                gap: 60,
                             }}>
-                                <span style={{
-                                    fontFamily, fontSize: 56, fontWeight: 900,
-                                    color: "#FFD700",
-                                    textShadow: "3px 3px 8px rgba(0,0,0,0.8)",
+                                {/* 左: 丸アイコン */}
+                                <div style={{
+                                    opacity: iconOpacity,
+                                    transform: `scale(${iconScale})`,
+                                    flexShrink: 0,
                                 }}>
-                                    いきなりですが問題です！
-                                </span>
+                                    <Img
+                                        src={staticFile("setouchi_jakucho.png")}
+                                        style={{
+                                            width: 480, height: 480, borderRadius: "50%",
+                                            objectFit: "cover",
+                                            border: "4px solid #C8A84E",
+                                            boxShadow: "0 0 40px rgba(200, 168, 78, 0.4)",
+                                        }}
+                                    />
+                                    <div style={{
+                                        textAlign: "center", marginTop: 16,
+                                        fontFamily, fontSize: 36, fontWeight: 700,
+                                        color: "#C8A84E",
+                                    }}>
+                                        瀬戸内寂聴
+                                    </div>
+                                </div>
+
+                                {/* 右: 名言テキスト */}
+                                <div style={{
+                                    flex: 1, opacity: textOpacity,
+                                    backgroundColor: "rgba(30, 30, 30, 0.9)",
+                                    borderRadius: 16, padding: "40px 48px",
+                                    border: "2px solid #C8A84E",
+                                    boxShadow: "0 4px 20px rgba(0,0,0,0.5)",
+                                }}>
+                                    <div style={{
+                                        fontFamily, fontSize: 28, fontWeight: 600,
+                                        color: "#C8A84E", marginBottom: 24,
+                                    }}>
+                                        瀬戸内寂聴の言葉
+                                    </div>
+                                    <div style={{
+                                        fontFamily, fontSize: 52, fontWeight: 700,
+                                        color: "#ffffff", lineHeight: 1.6,
+                                        whiteSpace: "pre-line",
+                                    }}>
+                                        {quoteText}
+                                    </div>
+                                    <div style={{
+                                        textAlign: "right", marginTop: 24,
+                                        fontFamily, fontSize: 30, fontWeight: 600,
+                                        color: "#C8A84E",
+                                    }}>
+                                        ——瀬戸内寂聴
+                                    </div>
+                                </div>
                             </div>
 
-                            {/* 問題文はDataOverlay内のlabelで1回だけ表示（重複禁止） */}
-
-                            <div style={{ position: "absolute", top: 120, left: 0, right: 0, bottom: 120, zIndex: 1001, opacity: chartOpacity, transform: "scale(1.2)", transformOrigin: "center top" }}>
-                                <DataOverlay chartData={quizChartData} startFrame={0} channelColor={channelColor} />
-                            </div>
-
+                            {/* 下部: カツミ・ヒロシ + 紹介字幕 */}
                             <div style={{
-                                position: "absolute", bottom: 60, left: 0, right: 0,
-                                textAlign: "center", zIndex: 1002,
-                                opacity: answerOpacity,
-                                transform: `scale(${answerScale})`,
+                                position: "absolute", bottom: 0, left: 0, right: 0, height: 280,
+                                backgroundColor: "rgba(0,0,0,0.85)",
+                                display: "flex", alignItems: "center",
+                                padding: "0 40px", gap: 30,
+                                opacity: subtitleOpacity,
                             }}>
-                                <span style={{
+                                <Img src={staticFile("katsumi_neutral.png")} style={{ height: 120, borderRadius: 8 }} />
+                                <div style={{
+                                    flex: 1,
                                     fontFamily, fontSize: 64, fontWeight: 900,
                                     color: "#FFD700",
-                                    textShadow: "4px 4px 12px rgba(0,0,0,0.9)",
-                                    background: "rgba(0,0,0,0.5)",
-                                    padding: "12px 40px",
-                                    borderRadius: 12,
+                                    textShadow: "3px 3px 8px rgba(0,0,0,0.9)",
+                                    lineHeight: 1.3,
                                 }}>
-                                    正解は本編で！
-                                </span>
+                                    ここで、瀬戸内寂聴さんの言葉を紹介させてください。
+                                </div>
+                                <Img src={staticFile("hiroshi_neutral.png")} style={{ height: 120, borderRadius: 8 }} />
                             </div>
                         </AbsoluteFill>
                     </Sequence>
@@ -558,12 +590,10 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                 }} />
             )}
 
-            {/* 控え室ジングル（控え室開始時に黒画面で間→テキストフェードイン→ジングル再生） */}
-            {hikaeshitsuJingle && hikaeshitsuStartFrame && frame >= hikaeshitsuStartFrame && frame < hikaeshitsuStartFrame + slideDuration && (() => {
+            {/* 控え室開始: ジングルなし、フェードインのみ */}
+            {hikaeshitsuStartFrame && frame >= hikaeshitsuStartFrame && frame < hikaeshitsuStartFrame + 120 && (() => {
                 const elapsed = frame - hikaeshitsuStartFrame;
-                // 最初90フレーム(約3秒): 黒画面のみ（一呼吸の間を作る）
-                // 90フレーム以降: テキストが15フレームかけてフェードイン
-                const textOpacity = elapsed < 90 ? 0 : Math.min(1, (elapsed - 90) / 15);
+                const textOpacity = elapsed < 60 ? 0 : Math.min(1, (elapsed - 60) / 15);
                 return (
                     <AbsoluteFill style={{ backgroundColor: "#000000", zIndex: 1000, display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <div style={{
@@ -574,7 +604,6 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                         }}>
                             控室にて
                         </div>
-                        <Audio src={staticFile(hikaeshitsuJingle)} volume={0.3} />
                     </AbsoluteFill>
                 );
             })()}
@@ -589,13 +618,13 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
 
 
 
-            {/* 出典（ニュースソース）控室時は非表示 */}
+            {/* 出典（ニュースソース）透過バーの上にレイヤー、右端寄せ白文字 */}
             {!isHikaeshitsu && (
                 <div style={{
-                    position: "absolute", top: barY - 40, right: 20,
-                    fontFamily, fontSize: 32, fontWeight: "bold", color: "#ffffff",
+                    position: "absolute", top: barY - 2, right: 20,
+                    fontFamily, fontSize: 28, fontWeight: "bold", color: "#ffffff",
                     textShadow: "2px 2px 6px rgba(0,0,0,0.8)",
-                    zIndex: 30,
+                    zIndex: 105,
                 }}>
                     {source ? `出典：${source}` : channelName}
                 </div>
@@ -607,10 +636,8 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                 backgroundColor: "rgba(0, 0, 0, 0.75)",
             }} />
 
-            {/* チャートデータ表示 */}
-            {/* チャートデータ表示: 次のグラフが出るまで表示し続ける */}
+            {/* チャートデータ表示: 左チョーク風画像 + 右チャート (画面上部を左右50:50分割、余白なし) */}
             {chartData && (() => {
-                // 現在表示すべきチャートを特定（triggerFrame以降で、次のtriggerFrame未満）
                 let activeIndex = -1;
                 for (let i = chartData.length - 1; i >= 0; i--) {
                     if (frame >= chartData[i].triggerFrame) {
@@ -620,19 +647,71 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                 }
                 if (activeIndex === -1) return null;
                 const cd = chartData[activeIndex];
-                // 次のチャートのtriggerFrameがあればそこまで、なければずっと表示
                 const nextTrigger = activeIndex < chartData.length - 1
                     ? chartData[activeIndex + 1].triggerFrame
                     : Infinity;
                 if (frame >= nextTrigger) return null;
+
+                const fadeIn = interpolate(frame - cd.triggerFrame, [0, 15], [0, 1], { extrapolateRight: "clamp" });
+                const panelHeight = barY - 4; // 透過バーの上端まで
+
                 return (
-                    <DataOverlay
-                        key={activeIndex}
-                        chartData={cd.data}
-                        startFrame={cd.triggerFrame}
-                        channelColor={channelColor}
-                        compact={!!layoutPattern}
-                    />
+                    <>
+                        {/* ===== 左パネル: チョーク風画像 + タイトル + キャプション ===== */}
+                        <div style={{
+                            position: "absolute", top: 0, left: 0,
+                            width: "50%", height: panelHeight,
+                            backgroundColor: "rgba(0, 0, 0, 0.85)",
+                            zIndex: 100,
+                            display: "flex", flexDirection: "column",
+                            opacity: fadeIn, overflow: "hidden",
+                            boxSizing: "border-box",
+                        }}>
+                            {/* タイトル (左上スタート、大きく) */}
+                            <div style={{
+                                padding: "10px 16px 6px 16px",
+                                fontFamily, fontSize: cd.data.label.length <= 8 ? 56 : cd.data.label.length <= 14 ? 46 : 38,
+                                fontWeight: 900, color: "#FFD700",
+                                lineHeight: 1.2,
+                                flexShrink: 0,
+                            }}>
+                                {cd.data.label}
+                            </div>
+                            {/* チョーク画像 (枠ギリギリまで、余白なし) */}
+                            <div style={{
+                                flex: 1, width: "100%",
+                                display: "flex", justifyContent: "center", alignItems: "center",
+                                overflow: "hidden",
+                            }}>
+                                <Img
+                                    src={staticFile("chalk_illustration.png")}
+                                    style={{
+                                        width: "100%", height: "100%", objectFit: "cover",
+                                    }}
+                                />
+                            </div>
+                            {/* キャプション */}
+                            <div style={{
+                                padding: "4px 12px 8px 12px",
+                                fontFamily, fontSize: 24, fontWeight: 600,
+                                color: "rgba(255,255,255,0.8)",
+                                lineHeight: 1.2,
+                                flexShrink: 0,
+                            }}>
+                                {cd.data.subtitle || ""}
+                            </div>
+                        </div>
+
+                        {/* ===== 右パネル: チャート (95%使用、余白5%以内) ===== */}
+                        <DataOverlay
+                            key={activeIndex}
+                            chartData={cd.data}
+                            startFrame={cd.triggerFrame}
+                            channelColor={channelColor}
+                            compact
+                            panelHeight={panelHeight}
+                        />
+                    </>
                 );
             })()}
 
