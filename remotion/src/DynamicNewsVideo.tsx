@@ -307,11 +307,11 @@ const SubtitleLine: React.FC<{
         return (
             <div style={{
                 opacity: fadeIn,
-                position: "absolute", top: barY + 30, left: 220, right: 170,
+                position: "absolute", top: barY + 8, left: 220, right: 170,
                 fontFamily, fontSize: line.text.length > 30 ? 72 : line.text.length > 20 ? 82 : 95, fontWeight: "bold",
                 color: baseColor,
                 textShadow: "4px 4px 10px rgba(0,0,0,0.95)", textAlign: "left",
-                lineHeight: 1.15, maxHeight: barHeight - 60,
+                lineHeight: 1.15, maxHeight: barHeight - 100,
                 wordBreak: "keep-all" as const,
                 overflowWrap: "break-word" as const,
             }}>
@@ -337,12 +337,12 @@ const SubtitleLine: React.FC<{
         return (
             <div style={{
                 opacity: fadeIn * (0.4 + boldProgress * 0.6),
-                position: "absolute", top: barY + 30, left: 220, right: 170,
+                position: "absolute", top: barY + 8, left: 220, right: 170,
                 fontFamily, fontSize: line.text.length > 30 ? 72 : line.text.length > 20 ? 82 : 95, fontWeight: 900,
                 color: baseColor,
                 textShadow: "4px 4px 10px rgba(0,0,0,0.95)",
                 textAlign: "left",
-                lineHeight: 1.15, maxHeight: barHeight - 60,
+                lineHeight: 1.15, maxHeight: barHeight - 100,
                 wordBreak: "keep-all" as const,
                 overflowWrap: "break-word" as const,
                 transform: `scale(${scale})`,
@@ -378,11 +378,11 @@ const SubtitleLine: React.FC<{
     return (
         <div style={{
             opacity: fadeIn,
-            position: "absolute", top: barY + 30, left: 220, right: 170,
+            position: "absolute", top: barY + 8, left: 220, right: 170,
             fontFamily, fontSize: subtitleFontSize, fontWeight: "bold",
             color: baseColor,
             textShadow: "4px 4px 10px rgba(0,0,0,0.95)", textAlign: "left",
-            lineHeight: 1.15, maxHeight: barHeight - 60,
+            lineHeight: 1.15, maxHeight: barHeight - 100,
             wordBreak: "keep-all" as const,
             overflowWrap: "break-word" as const,
         }}>
@@ -555,45 +555,53 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                                 </div>
                             </div>
 
-                            {/* 下部: カツミ・ヒロシ + 紹介字幕 */}
+                            {/* 下部: 「今日の一言」テキスト（アイコンなし） */}
                             <div style={{
                                 position: "absolute", bottom: 0, left: 0, right: 0, height: 280,
                                 backgroundColor: "rgba(0,0,0,0.85)",
-                                display: "flex", alignItems: "center",
-                                padding: "0 40px", gap: 30,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                padding: "0 60px",
                                 opacity: subtitleOpacity,
                             }}>
-                                <Img src={staticFile("katsumi_neutral.png")} style={{ height: 120, borderRadius: 8 }} />
                                 <div style={{
-                                    flex: 1,
-                                    fontFamily, fontSize: 64, fontWeight: 900,
+                                    fontFamily, fontSize: 128, fontWeight: 900,
                                     color: "#FFD700",
-                                    textShadow: "3px 3px 8px rgba(0,0,0,0.9)",
+                                    textShadow: "4px 4px 12px rgba(0,0,0,0.9)",
                                     lineHeight: 1.3,
+                                    textAlign: "center",
                                 }}>
-                                    ここで、瀬戸内寂聴さんの言葉を紹介させてください。
+                                    今日の一言
                                 </div>
-                                <Img src={staticFile("hiroshi_neutral.png")} style={{ height: 120, borderRadius: 8 }} />
                             </div>
                         </AbsoluteFill>
                     </Sequence>
                 );
             })()}
 
-            {/* 本編→控室のフェードアウト（控室開始の60フレーム前から黒にフェードアウト） */}
-            {hikaeshitsuStartFrame && frame >= hikaeshitsuStartFrame - 60 && frame < hikaeshitsuStartFrame && (
+            {/* 本編→控室のフェードアウト（控室開始の132+60=192フレーム前から黒にフェードアウト） */}
+            {/* フェードアウト60F → 完全黒画面72F(3秒余韻) → 「控室にて」テキスト表示120F */}
+            {hikaeshitsuStartFrame && frame >= hikaeshitsuStartFrame - 192 && frame < hikaeshitsuStartFrame - 132 && (
                 <div style={{
                     position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
                     backgroundColor: "#000000",
-                    opacity: Math.min(1, (frame - (hikaeshitsuStartFrame - 60)) / 60),
+                    opacity: Math.min(1, (frame - (hikaeshitsuStartFrame - 192)) / 60),
                     zIndex: 999,
                 }} />
             )}
 
-            {/* 控え室開始: ジングルなし、フェードインのみ */}
-            {hikaeshitsuStartFrame && frame >= hikaeshitsuStartFrame && frame < hikaeshitsuStartFrame + 120 && (() => {
-                const elapsed = frame - hikaeshitsuStartFrame;
-                const textOpacity = elapsed < 60 ? 0 : Math.min(1, (elapsed - 60) / 15);
+            {/* 完全黒画面（3秒の余韻・無音・無テキスト） */}
+            {hikaeshitsuStartFrame && frame >= hikaeshitsuStartFrame - 132 && frame < hikaeshitsuStartFrame - 60 && (
+                <div style={{
+                    position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: "#000000",
+                    zIndex: 999,
+                }} />
+            )}
+
+            {/* 控え室開始前の「控室にて」テキスト表示 */}
+            {hikaeshitsuStartFrame && frame >= hikaeshitsuStartFrame - 60 && frame < hikaeshitsuStartFrame + 60 && (() => {
+                const elapsed = frame - (hikaeshitsuStartFrame - 60);
+                const textOpacity = elapsed < 30 ? 0 : Math.min(1, (elapsed - 30) / 15);
                 return (
                     <AbsoluteFill style={{ backgroundColor: "#000000", zIndex: 1000, display: "flex", justifyContent: "center", alignItems: "center" }}>
                         <div style={{
@@ -619,14 +627,15 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
 
 
             {/* 出典（ニュースソース）透過バーの上にレイヤー、右端寄せ白文字 */}
-            {!isHikaeshitsu && (
+            {/* 独自取材の場合は出典を表示しない */}
+            {!isHikaeshitsu && source && source !== "独自取材" && (
                 <div style={{
                     position: "absolute", top: barY - 2, right: 20,
                     fontFamily, fontSize: 28, fontWeight: "bold", color: "#ffffff",
                     textShadow: "2px 2px 6px rgba(0,0,0,0.8)",
                     zIndex: 105,
                 }}>
-                    {source ? `出典：${source}` : channelName}
+                    出典：{source}
                 </div>
             )}
 
@@ -667,17 +676,19 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                             opacity: fadeIn, overflow: "hidden",
                             boxSizing: "border-box",
                         }}>
-                            {/* タイトル (左上スタート、大きく) */}
+                            {/* キャプション（人物紹介テキスト・大きく表示） */}
                             <div style={{
                                 padding: "10px 16px 6px 16px",
-                                fontFamily, fontSize: cd.data.label.length <= 8 ? 56 : cd.data.label.length <= 14 ? 46 : 38,
-                                fontWeight: 900, color: "#FFD700",
-                                lineHeight: 1.2,
+                                fontFamily, fontSize: 48, fontWeight: 900,
+                                color: "#FFD700",
+                                lineHeight: 1.3,
                                 flexShrink: 0,
+                                wordBreak: "keep-all" as const,
+                                overflowWrap: "break-word" as const,
                             }}>
-                                {cd.data.label}
+                                {cd.data.subtitle || ""}
                             </div>
-                            {/* チョーク画像 (枠ギリギリまで、余白なし) */}
+                            {/* チョーク画像 */}
                             <div style={{
                                 flex: 1, width: "100%",
                                 display: "flex", justifyContent: "center", alignItems: "center",
@@ -690,16 +701,7 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                                     }}
                                 />
                             </div>
-                            {/* キャプション */}
-                            <div style={{
-                                padding: "4px 12px 8px 12px",
-                                fontFamily, fontSize: 24, fontWeight: 600,
-                                color: "rgba(255,255,255,0.8)",
-                                lineHeight: 1.2,
-                                flexShrink: 0,
-                            }}>
-                                {cd.data.subtitle || ""}
-                            </div>
+                            {/* ラベルはDataOverlay側に表示するため、左パネルでは重複削除 */}
                         </div>
 
                         {/* ===== 右パネル: チャート (95%使用、余白5%以内) ===== */}

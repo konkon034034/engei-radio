@@ -177,7 +177,7 @@ jobs:
         curl -H "Content-Type: application/json" \
           -d "{
             \"embeds\": [{
-              \"title\": \"手動アップロード日 - engei-radio (園芸)\",
+              \"title\": \"手動アップロード日 - neeeenkin (年金)\",
               \"color\": 16753920,
               \"fields\": [
                 {\"name\": \"タイトル\", \"value\": \"${TITLE}\", \"inline\": false},
@@ -186,7 +186,7 @@ jobs:
                 {\"name\": \"初コメント\", \"value\": \"${FIRST_COMMENT:0:300}\", \"inline\": false},
                 {\"name\": \"コミュニティ投稿用テキスト\", \"value\": \"${COMMUNITY:0:500}\", \"inline\": false},
                 {\"name\": \"コメント返信テンプレート\", \"value\": \"${REPLY_TEMPLATES:0:500}\", \"inline\": false},
-                {\"name\": \"ダウンロード\", \"value\": \"[動画・サムネイル・テキスト・画像](https://github.com/konkon034034/engei-radio/actions/runs/${{ github.run_id }})\", \"inline\": false}
+                {\"name\": \"ダウンロード\", \"value\": \"[動画・サムネイル・テキスト・画像](https://github.com/konkon034034/neeeenkin/actions/runs/${{ github.run_id }})\", \"inline\": false}
               ]
             }]
           }" \

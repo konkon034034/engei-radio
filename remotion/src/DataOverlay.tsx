@@ -447,7 +447,7 @@ export const DataOverlay: React.FC<{
                     {chartData.label}
                 </div>
                 <div style={{
-                    fontFamily, fontSize: 28, color: "rgba(255,255,255,0.5)",
+                    fontFamily, fontSize: 48, color: "rgba(255,255,255,0.7)",
                     marginBottom: 8,
                 }}>
                     {totalVotes > 0 ? `${Math.round(totalVotes)}人に聞きました` : "みんなの声"}

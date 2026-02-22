@@ -21,8 +21,8 @@ export const RemotionRoot: React.FC = () => {
                 height={1080}
                 defaultProps={{
                     title: inputProps.title || "テストタイトル",
-                    channelName: inputProps.channelName || "もう枯らさない家庭園芸",
-                    channelColor: inputProps.channelColor || "#228B22",
+                    channelName: inputProps.channelName || "テストチャンネル",
+                    channelColor: inputProps.channelColor || "#e74c3c",
                     script: inputProps.script || [
                         { section: "main", speaker: "カツミ", text: "おはようございます！今日も年金ニュースをお届けしますよ！", emotion: "guts", startFrame: 0, endFrame: 120 },
                         { section: "main", speaker: "ヒロシ", text: "おはよう、カツミさん。今日はどんなニュースがあるの？", emotion: "default", startFrame: 120, endFrame: 240 },
@@ -46,7 +46,6 @@ export const RemotionRoot: React.FC = () => {
                     hikaeshitsuJingle: inputProps.hikaeshitsuJingle || "hikaeshitsu_jingle.mp3",
                     subtitleStyle: inputProps.subtitleStyle || "highlight",
                     subtitleColor: inputProps.subtitleColor || "rgba(220,140,30,0.5)",
-                    jakuchoQuote: inputProps.jakuchoQuote || "いくつになっても\n恋愛感情がなくなったわけでは\nないんです。\nただ、その表現の仕方が\n変わってきただけ。",
                     chartData: inputProps.chartData || [
                         { triggerFrame: 30, data: { type: "poll" as const, label: "年金受給開始年齢、あなたは？", value: 0, unit: "", items: [{ label: "60歳から", value: 25 }, { label: "65歳から", value: 45 }, { label: "70歳から", value: 20 }, { label: "まだ決めてない", value: 10 }] } },
                         { triggerFrame: 270, data: { type: "poll" as const, label: "この政策、賛成？反対？", value: 0, unit: "", items: [{ label: "賛成", value: 42 }, { label: "どちらとも言えない", value: 35 }, { label: "反対", value: 23 }] } },
@@ -54,6 +53,7 @@ export const RemotionRoot: React.FC = () => {
                         { triggerFrame: 550, data: { type: "donut" as const, label: "受給者の割合", value: 65, unit: "%", maxValue: 100 } },
                         { triggerFrame: 720, data: { type: "number" as const, label: "標準月額年金", value: 230000, unit: "円" } },
                     ],
+                    jakuchoQuote: inputProps.jakuchoQuote || "いくつになっても\n恋愛感情がなくなったわけでは\nないんです。\nただ、その表現の仕方が\n変わってきただけ。",
                 }}
             />
 
