@@ -483,10 +483,13 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
             {slideDuration > 0 && hasJakuchoQuote && (() => {
                 const quoteText = jakuchoQuote || "いくつになっても\n恋愛感情がなくなったわけでは\nないんです。\nただ、その表現の仕方が\n変わってきただけ。";
 
-                const iconOpacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: "clamp" });
-                const iconScale = interpolate(frame, [0, 20], [0.8, 1], { extrapolateRight: "clamp" });
-                const textOpacity = interpolate(frame, [20, 40], [0, 1], { extrapolateRight: "clamp" });
-                const subtitleOpacity = interpolate(frame, [50, 65], [0, 1], { extrapolateRight: "clamp" });
+                // アニメーション: 1.今日の一言 → 2.名言テキスト → 3.寂聴さん画像が後から登場
+                const subtitleOpacity = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: "clamp" });
+                const textOpacity = interpolate(frame, [20, 45], [0, 1], { extrapolateRight: "clamp" });
+                const iconOpacity = interpolate(frame, [50, 75], [0, 1], { extrapolateRight: "clamp" });
+                const iconScale = interpolate(frame, [50, 75], [0.3, 1], { extrapolateRight: "clamp" });
+                const iconTranslateX = interpolate(frame, [50, 75], [-120, 0], { extrapolateRight: "clamp" });
+                const iconGlow = interpolate(frame, [60, 80], [0, 1], { extrapolateRight: "clamp" });
                 const fadeOut = interpolate(frame, [slideDuration - 15, slideDuration], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
                 return (
@@ -500,11 +503,12 @@ export const DynamicNewsVideo: React.FC<DynamicNewsVideoProps> = ({
                                 display: "flex", flexDirection: "row", alignItems: "center",
                                 gap: 60,
                             }}>
-                                {/* 左: 丸アイコン */}
+                                {/* 左: 丸アイコン（後から登場） */}
                                 <div style={{
                                     opacity: iconOpacity,
-                                    transform: `scale(${iconScale})`,
+                                    transform: `scale(${iconScale}) translateX(${iconTranslateX}px)`,
                                     flexShrink: 0,
+                                    filter: `drop-shadow(0 0 ${iconGlow * 30}px rgba(200, 168, 78, ${iconGlow * 0.8}))`,
                                 }}>
                                     <Img
                                         src={staticFile("setouchi_jakucho.png")}
