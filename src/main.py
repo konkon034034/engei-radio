@@ -1743,30 +1743,13 @@ Warm, nostalgic, inviting feeling. Simple clear compositions. 16:9 landscape asp
 
     def generate_youtube_thumbnail(self, title, comment=None, script=None):
         """
-        YouTube投稿用サムネイル画像を生成（v10確定版: 全面塗り+透過キャラ+喜怒哀楽カラー連動）
+        YouTube投稿用サムネイル画像を生成（v10確定版: 丸切り抜きキャラ+2行バッジ+テキスト前面レイヤー）
 
         Pillowのみ・API課金ゼロ。
-        obaachan/ojiichanの透過版キャラ画像 + 超デカ文字 + 黒影 + バッジ。
+        obaachan/ojiichanを丸く切り抜き + 超デカ文字（前面レイヤー）+ 黒影 + 2行バッジ。
         台本の感情から喜怒哀楽を判定し、背景色・文字色・キャラ感情を自動連動。
-
-        カラー連動ルール:
-        - 怒/哀（angry/sad） → 赤背景 + 白タイトル + 黄サブ
-        - 喜/楽（happy/exciting） → 青背景 + 白タイトル + 黄サブ
-        - 注意（alert） → 黄背景 + 白タイトル + 赤サブ
-        - 情報（info） → 緑背景 + 白タイトル + 黄サブ
-        - 衝撃（shocking） → 紫背景 + 白タイトル + 黄サブ
-        - デフォルト → 赤背景
-
-        Args:
-            title: タイトル（改行で区切られている: 1行目=メイン、2行目=サブ）
-            comment: バッジテキスト（省略時はデフォルト）
-            script: 台本データ（感情連動用、省略時はデフォルト）
-
-        Returns:
-            str: サムネイル画像のパス
         """
-        print("--- YouTubeサムネイル画像生成中 (v10確定版: 全面塗り+透過キャラ+カラー連動) ---")
-        import random
+        print("--- YouTubeサムネイル画像生成中 (v10確定版: 丸キャラ+2行バッジ) ---")
 
         from PIL import Image, ImageDraw, ImageFont
 
@@ -1775,7 +1758,7 @@ Warm, nostalgic, inviting feeling. Simple clear compositions. 16:9 landscape asp
         line1 = title_lines[0] if len(title_lines) > 0 else ""
         line2 = title_lines[1] if len(title_lines) > 1 else ""
 
-        # ===== 喜怒哀楽の判定（台本の感情から自動判定） =====
+        # ===== 喜怒哀楽の判定 =====
         emotion_to_mood = {
             "neutral": "angry", "normal": "angry", "default": "angry",
             "happy": "happy", "excited": "happy", "guts": "happy",
@@ -1787,32 +1770,15 @@ Warm, nostalgic, inviting feeling. Simple clear compositions. 16:9 landscape asp
             "doyon": "angry", "question": "info", "thinking": "info",
             "henken": "angry", "aogu": "angry", "sukashi": "info",
         }
-
-        # カラーパレット（喜怒哀楽連動）
         COLOR_SCHEMES = {
-            "angry": {  # 怒/哀 → 赤背景
-                "bg": (200, 40, 40), "l1c": (255, 255, 255), "l2c": (255, 240, 80),
-                "badge_bg": (30, 30, 30), "oba": "worried", "oji": "worried",
-            },
-            "happy": {  # 喜/楽 → 青背景
-                "bg": (40, 70, 170), "l1c": (255, 255, 255), "l2c": (255, 220, 50),
-                "badge_bg": (220, 50, 50), "oba": "happy", "oji": "happy",
-            },
-            "alert": {  # 注意 → 黄背景
-                "bg": (230, 170, 30), "l1c": (255, 255, 255), "l2c": (220, 40, 40),
-                "badge_bg": (200, 40, 40), "oba": "surprised", "oji": "surprised",
-            },
-            "info": {  # 情報 → 緑背景
-                "bg": (30, 120, 70), "l1c": (255, 255, 255), "l2c": (255, 240, 80),
-                "badge_bg": (30, 30, 30), "oba": "neutral", "oji": "neutral",
-            },
-            "shocking": {  # 衝撃 → 紫背景
-                "bg": (90, 40, 150), "l1c": (255, 255, 255), "l2c": (255, 200, 50),
-                "badge_bg": (220, 50, 50), "oba": "surprised", "oji": "surprised",
-            },
+            "angry": {"bg": (200, 40, 40), "l1c": (255, 255, 255), "l2c": (255, 240, 80), "badge_bg": (30, 30, 30), "oba": "worried", "oji": "worried"},
+            "happy": {"bg": (40, 70, 170), "l1c": (255, 255, 255), "l2c": (255, 220, 50), "badge_bg": (220, 50, 50), "oba": "happy", "oji": "happy"},
+            "alert": {"bg": (230, 170, 30), "l1c": (255, 255, 255), "l2c": (220, 40, 40), "badge_bg": (200, 40, 40), "oba": "surprised", "oji": "surprised"},
+            "info": {"bg": (30, 120, 70), "l1c": (255, 255, 255), "l2c": (255, 240, 80), "badge_bg": (30, 30, 30), "oba": "neutral", "oji": "neutral"},
+            "shocking": {"bg": (90, 40, 150), "l1c": (255, 255, 255), "l2c": (255, 200, 50), "badge_bg": (220, 50, 50), "oba": "surprised", "oji": "surprised"},
         }
 
-        best_mood = "angry"  # デフォルト: 赤（最もクリック率が高い）
+        best_mood = "angry"
         if script:
             mood_counts = {}
             for line_data in script:
@@ -1828,32 +1794,37 @@ Warm, nostalgic, inviting feeling. Simple clear compositions. 16:9 landscape asp
 
         # ===== サムネイル描画 =====
         W, H = 1280, 720
+        CHAR_SIZE = 300
+        BADGE_W = int(W * 0.50)
+        BADGE_H = 220
+        L1_Y = int(H * 0.48)
+        L2_Y = int(H * 0.80)
+        MAX_TW = int(W * 0.95)
+
         img = Image.new("RGB", (W, H), scheme["bg"])
 
-        # キャラ画像読み込み（透過版優先）
-        def load_char_transparent(name, pose, target_h):
-            for suffix in ["_transparent.png", ".png"]:
-                p = os.path.join("assets", "character_assets", name, f"{name}_{pose}{suffix}")
-                if os.path.exists(p):
-                    ci = Image.open(p).convert("RGBA")
-                    r = target_h / ci.height
-                    return ci.resize((int(ci.width * r), target_h), Image.LANCZOS)
-            return None
+        # キャラ丸切り抜き（背面レイヤー）
+        def load_char_circle(name, pose, size):
+            p = os.path.join("assets", "character_assets", name, f"{name}_{pose}.png")
+            if not os.path.exists(p):
+                return None
+            ci = Image.open(p).convert("RGB")
+            w, h = ci.size
+            s = min(w, h)
+            ci = ci.crop(((w - s) // 2, (h - s) // 2, (w + s) // 2, (h + s) // 2))
+            ci = ci.resize((size, size), Image.LANCZOS)
+            mask = Image.new("L", (size, size), 0)
+            ImageDraw.Draw(mask).ellipse([0, 0, size - 1, size - 1], fill=255)
+            result = ci.convert("RGBA")
+            result.putalpha(mask)
+            return result
 
-        ch = 220
-        oji = load_char_transparent("ojiichan", scheme["oji"], ch)
-        oba = load_char_transparent("obaachan", scheme["oba"], ch)
-
+        oji = load_char_circle("ojiichan", scheme["oji"], CHAR_SIZE)
+        oba = load_char_circle("obaachan", scheme["oba"], CHAR_SIZE)
         if oji:
-            if oji.mode == "RGBA":
-                img.paste(oji, (0, 0), oji)
-            else:
-                img.paste(oji, (0, 0))
+            img.paste(oji, (5, 5), oji)
         if oba:
-            if oba.mode == "RGBA":
-                img.paste(oba, (W - oba.width, 0), oba)
-            else:
-                img.paste(oba, (W - oba.width, 0))
+            img.paste(oba, (W - CHAR_SIZE - 5, 5), oba)
 
         draw = ImageDraw.Draw(img)
 
@@ -1862,7 +1833,7 @@ Warm, nostalgic, inviting feeling. Simple clear compositions. 16:9 landscape asp
         if not os.path.exists(bold_font_path):
             raise FileNotFoundError(f"太字フォントが見つかりません: {bold_font_path}")
 
-        def fit_font(text, max_width, start_size=300):
+        def fit_font(text, max_width, start_size=260):
             for sz in range(start_size, 20, -2):
                 f = ImageFont.truetype(bold_font_path, sz)
                 tw = f.getbbox(text)[2] - f.getbbox(text)[0]
@@ -1870,35 +1841,46 @@ Warm, nostalgic, inviting feeling. Simple clear compositions. 16:9 landscape asp
                     return f, sz
             return ImageFont.truetype(bold_font_path, 20), 20
 
-        tw = int(W * 0.95)
-        f1, _ = fit_font(line1, tw)
-        f2, _ = fit_font(line2, tw)
-        y1, y2 = H * 0.42, H * 0.78
-
-        # 黒影 + 本体テキスト
+        # テキスト行1（前面レイヤー、キャラに被ってOK）
+        f1, _ = fit_font(line1, MAX_TW, 240)
         for dx, dy in [(6, 6), (4, 4)]:
-            draw.text((W // 2 + dx, y1 + dy), line1, fill=(0, 0, 0), font=f1, anchor="mm")
-            draw.text((W // 2 + dx, y2 + dy), line2, fill=(0, 0, 0), font=f2, anchor="mm")
-        draw.text((W // 2, y1), line1, fill=scheme["l1c"], font=f1, anchor="mm")
-        draw.text((W // 2, y2), line2, fill=scheme["l2c"], font=f2, anchor="mm")
+            draw.text((W // 2 + dx, L1_Y + dy), line1, fill=(0, 0, 0), font=f1, anchor="mm")
+        draw.text((W // 2, L1_Y), line1, fill=scheme["l1c"], font=f1, anchor="mm")
 
-        # 上部バッジ
+        # テキスト行2
+        f2, _ = fit_font(line2, MAX_TW, 240)
+        for dx, dy in [(6, 6), (4, 4)]:
+            draw.text((W // 2 + dx, L2_Y + dy), line2, fill=(0, 0, 0), font=f2, anchor="mm")
+        draw.text((W // 2, L2_Y), line2, fill=scheme["l2c"], font=f2, anchor="mm")
+
+        # バッジ（最前面、2行化）
         badge_text = comment if comment else "知らないと損！"
-        badge_font = ImageFont.truetype(bold_font_path, 72)
-        btw = badge_font.getbbox(badge_text)[2] - badge_font.getbbox(badge_text)[0]
+        bx1, bx2 = W // 2 - BADGE_W // 2, W // 2 + BADGE_W // 2
+        by1 = 5
+        draw.rounded_rectangle([bx1, by1, bx2, by1 + BADGE_H], radius=16, fill=scheme["badge_bg"])
+
+        # バッジテキスト分割（\nがあればそれで、なければ自動）
+        if "\n" in badge_text:
+            badge_lines = badge_text.split("\n")[:2]
+        elif len(badge_text) <= 5:
+            badge_lines = [badge_text]
+        else:
+            mid = len(badge_text) // 2
+            badge_lines = [badge_text[:mid], badge_text[mid:]]
+
         badge_fg = (255, 255, 255)
-        if scheme["badge_bg"][0] > 200 and scheme["badge_bg"][1] > 150:
-            badge_fg = (30, 30, 30)
-        draw.rounded_rectangle(
-            [W // 2 - btw // 2 - 22, 50 - 72 // 2 - 8, W // 2 + btw // 2 + 22, 50 + 72 // 2 + 8],
-            radius=16, fill=scheme["badge_bg"],
-        )
-        draw.text((W // 2, 50), badge_text, fill=badge_fg, font=badge_font, anchor="mm")
+        if len(badge_lines) == 1:
+            bf, _ = fit_font(badge_lines[0], int(BADGE_W * 0.90), 150)
+            draw.text((W // 2, by1 + BADGE_H // 2), badge_lines[0], fill=badge_fg, font=bf, anchor="mm")
+        else:
+            bf0, _ = fit_font(badge_lines[0], int(BADGE_W * 0.90), 80)
+            bf1, _ = fit_font(badge_lines[1], int(BADGE_W * 0.90), 80)
+            draw.text((W // 2, by1 + 60), badge_lines[0], fill=badge_fg, font=bf0, anchor="mm")
+            draw.text((W // 2, by1 + 160), badge_lines[1], fill=badge_fg, font=bf1, anchor="mm")
 
         img.save(out_path, quality=95)
         print(f"[OK] v10サムネイル保存完了: {out_path} (mood: {best_mood})")
         return out_path
-
     def synthesize_with_edge_tts(self, text, voice, output_path):
         """Edge TTS（Microsoft Neural音声・完全無料）でWAV音声を生成"""
         try:
