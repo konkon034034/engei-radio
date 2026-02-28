@@ -283,134 +283,6 @@ def fetch_trending_youtube_videos(keywords=None, max_videos=5, days=5, min_views
     return enriched_videos[:max_videos]
 
 
-def fetch_x_posts_via_grok(keywords, max_posts=5):
-    """Grok API (x_search) でXのリアルタイム世論をクラスターベースで取得する
-
-    参考: HayattiQ/x-research-skills の4段階手法を適用
-    1) 広域探索: テーマ関連の複数クエリで幅広くX検索
-    2) クラスター抽出: 繰り返し出るトピックを凝縮
-    3) 代表ポスト選出: クラスターごとに反響の大きい投稿を選出
-    4) 構造化出力: 動画台本に使える「庶民の声」として整理
-
-    Args:
-        keywords: 検索キーワードのリスト（テーマ別の探索シード）
-        max_posts: 取得する投稿の最大数
-
-    Returns:
-        [{"text": "クラスター分析結果", "source": "X"}]
-    """
-    import requests as req
-
-    xai_api_key = os.environ.get("XAI_API_KEY", "")
-    if not xai_api_key:
-        print("[WARN] XAI_API_KEY未設定。X検索スキップ")
-        return []
-
-    theme = os.environ.get("CHANNEL_THEME", "暮らし")
-    all_results = []
-
-    # クラスターベースリサーチ: 全キーワードを1回の高品質な呼び出しに統合
-    seed_queries = ", ".join(keywords)
-
-    try:
-        print(f"[Grok x_search] クラスターベースリサーチ開始: {seed_queries}")
-        rich_prompt = f"""日本語で回答して。
-
-目的: YouTube動画の台本に使う「Xでのリアルタイムの声」を収集する
-テーマ: {theme}
-想定視聴者: {theme}に関心を持つ50-70代の方
-領域: {theme}に関連する暮らし・知恵・情報
-
-やること（4段階リサーチ）:
-
-1) まず「広く薄く」探索する:
-   - 以下のシードクエリに加え、関連する検索クエリを自分で5個以上追加してX検索する
-   - シードクエリ: {theme} 最新, {theme} 暮らし, {theme} コツ, {theme} 節約, {theme} おすすめ
-   - 可能ならバズっている投稿（いいね数・リポスト数が多い）を優先的に拾う
-
-2) 収集した投稿から「繰り返し出てくるトピック」を3-5クラスターにまとめる:
-   - 単発の話題はクラスターにしない
-   - 各クラスターに「投稿者が使っている言い回し・キーフレーズ」を2-3個付ける
-
-3) クラスターごとに代表的な投稿を1-2個選ぶ:
-   - 投稿URL、投稿者名、エンゲージ指標（いいね数・リポスト数・閲覧数で観測できたもの）
-   - 長文の直接引用はせず、1-2行で要約する
-
-4) 各クラスターについて「庶民の本音」を1行で要約する:
-   - 視聴者（{theme}に関心を持つ50-70代の方）が「そうそう！」と共感する言い方で
-   - 不確かな情報は「未確認」と明記する
-
-出力形式（必ずこの構造で）:
-
-【タイムラインの空気】
-- クラスター1: [トピック名] → 庶民の本音1行
-  代表ポスト: [URL] ([投稿者], いいね[数])
-  キーフレーズ: [言い回し1], [言い回し2]
-- クラスター2: ...
-- クラスター3: ...
-
-【今日の注目3テーマ】
-1. [テーマ名]: [1行説明]
-2. [テーマ名]: [1行説明]
-3. [テーマ名]: [1行説明]
-
-【素材一覧】(最大{max_posts}件)
-各素材:
-- URL: [X投稿URL]
-- 要約: [1-2行]
-- エンゲージ: いいね=[数], RT=[数], 閲覧=[数] (不明はunknown)
-- なぜ反響があるか: [仮説1行]
-- 動画で使えるネタ: [1行]"""
-
-        resp = req.post(
-            "https://api.x.ai/v1/responses",
-            headers={
-                "Authorization": f"Bearer {xai_api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": "grok-4-fast",
-                "tools": [{"type": "x_search"}],
-                "input": rich_prompt,
-                "temperature": 0.3,
-            },
-            timeout=(10, 120),  # クラスター分析のため長めのタイムアウト
-        )
-
-        if resp.status_code == 200:
-            data = resp.json()
-            output_text = ""
-            for item in data.get("output", []):
-                if item.get("type") == "message":
-                    for content in item.get("content", []):
-                        if content.get("type") == "output_text":
-                            output_text += content.get("text", "")
-            if output_text:
-                all_results.append(
-                    {
-                        "text": output_text[:4000],  # クラスター分析は長めに許容
-                        "source": "X",
-                        "keyword": seed_queries,
-                    }
-                )
-                print(f"  → クラスターベースリサーチ成功 ({len(output_text)}文字)")
-            else:
-                print("  [WARN] X投稿テキスト抽出失敗")
-        elif resp.status_code == 429:
-            print("  [WARN] Grok APIレート制限。X検索終了")
-        else:
-            print(f"  [WARN] Grok API HTTP {resp.status_code}: {resp.text[:200]}")
-
-    except Exception as e:
-        print(f"  [WARN] Grok x_searchクラスターリサーチ失敗: {type(e).__name__}: {e}")
-
-    if all_results:
-        print(f"[OK] Xクラスターリサーチ完了: {len(all_results)}件")
-    else:
-        print("[WARN] Xクラスターリサーチ結果なし")
-
-    return all_results
-
 
 def fetch_news_from_rss(keywords, max_articles=5):
     """Google News RSSからキーワードでニュース記事を取得する
@@ -1004,18 +876,11 @@ class VideoEngineV4:
 
         # Part 3: X(旧Twitter)でリアルタイムの声を取得
         print(f"--- Part 3: X(旧Twitter){theme}の声 ---")
-        x_posts = fetch_x_posts_via_grok(keywords=[f"{theme} リアル", f"{theme} 暮らし", f"{theme} 体験"], max_posts=5)
-        x_voices = ""
-        if x_posts:
-            x_voices = "\n".join([post["text"] for post in x_posts])
-            print(f"[OK] X投稿{len(x_posts)}件取得成功")
 
         # 合体: ストーリー素材
-        x_section = f"\n\n【Xでのリアルな声】\n{x_voices}" if x_voices else ""
         stats_section = f"\n\n【統計データ（チャート用）】\n{stats_brief}" if stats_brief else ""
         news_content = f"""【{theme}のストーリー素材（メインコンテンツ）】
 {story_summary}
-{stats_section}{x_section}"""
 
         # promptをストーリー素材で更新（構成生成で使用）
         prompt = news_content
@@ -1878,237 +1743,160 @@ Warm, nostalgic, inviting feeling. Simple clear compositions. 16:9 landscape asp
 
     def generate_youtube_thumbnail(self, title, comment=None, script=None):
         """
-        YouTube投稿用サムネイル画像を生成（v8仕様: 黒板チョーク風）
+        YouTube投稿用サムネイル画像を生成（v10確定版: 全面塗り+透過キャラ+喜怒哀楽カラー連動）
 
-        Gemini画像生成APIで黒板チョーク風サムネイルを生成。
-        API失敗時は従来のPillow描画（v7）にフォールバック。
+        Pillowのみ・API課金ゼロ。
+        obaachan/ojiichanの透過版キャラ画像 + 超デカ文字 + 黒影 + バッジ。
+        台本の感情から喜怒哀楽を判定し、背景色・文字色・キャラ感情を自動連動。
+
+        カラー連動ルール:
+        - 怒/哀（angry/sad） → 赤背景 + 白タイトル + 黄サブ
+        - 喜/楽（happy/exciting） → 青背景 + 白タイトル + 黄サブ
+        - 注意（alert） → 黄背景 + 白タイトル + 赤サブ
+        - 情報（info） → 緑背景 + 白タイトル + 黄サブ
+        - 衝撃（shocking） → 紫背景 + 白タイトル + 黄サブ
+        - デフォルト → 赤背景
 
         Args:
-            title: 6文字x2行のタイトル（改行で区切られている）
-            comment: 吹き出し内コメント（改行で区切られている、省略時はデフォルト）
-            script: 台本データ（感情連動アイコン用、省略時はneutral）
+            title: タイトル（改行で区切られている: 1行目=メイン、2行目=サブ）
+            comment: バッジテキスト（省略時はデフォルト）
+            script: 台本データ（感情連動用、省略時はデフォルト）
 
         Returns:
             str: サムネイル画像のパス
         """
-        print("--- YouTubeサムネイル画像生成中 (v8仕様: 黒板チョーク風) ---")
+        print("--- YouTubeサムネイル画像生成中 (v10確定版: 全面塗り+透過キャラ+カラー連動) ---")
         import random
-        from datetime import datetime
 
         from PIL import Image, ImageDraw, ImageFont
 
         out_path = os.path.join(OUTPUT_DIR, "youtube_thumbnail.png")
         title_lines = title.split("\n")[:2]
-        title_line1 = title_lines[0] if len(title_lines) > 0 else ""
-        title_line2 = title_lines[1] if len(title_lines) > 1 else ""
+        line1 = title_lines[0] if len(title_lines) > 0 else ""
+        line2 = title_lines[1] if len(title_lines) > 1 else ""
 
-        # ====== v8: Gemini画像生成APIで黒板チョーク風サムネイル ======
-        try:
-            print("[v8] Gemini画像生成APIで黒板チョーク風サムネイル生成中...")
-            self.client = self._get_client()
-
-            chalk_prompt = f"""Create a YouTube thumbnail image (1280x720 pixels, 16:9 aspect ratio) in chalkboard style:
-
-BACKGROUND: Dark green or black chalkboard texture with realistic chalk dust and smudges.
-
-TEXT (MUST be in Japanese, written clearly and legibly):
-- Top large text in WHITE chalk: 「{title_line1}」
-- Bottom large text in YELLOW chalk: 「{title_line2}」
-- Text should be bold, large, and easily readable even at small sizes.
-
-ILLUSTRATIONS (all in chalk-drawn style):
-- A cute chalk-drawn elderly Japanese couple (man and woman, 60s-70s) as mascot characters
-- Simple chalk-drawn icons related to the topic (money, charts, daily life items)
-- A small hand-drawn chart or graph in chalk
-
-STYLE:
-- Everything looks hand-drawn with chalk on a real classroom blackboard
-- White and yellow chalk only (no other colors)
-- Include chalk dust effects, smudges, and eraser marks for authenticity
-- Warm, nostalgic, educational feeling
-- The text MUST be the dominant visual element (largest thing on the image)"""
-
-            response = self.client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents=chalk_prompt,
-                config=types.GenerateContentConfig(
-                    response_modalities=["IMAGE", "TEXT"],
-                ),
-            )
-
-            # 画像レスポンスを抽出して保存
-            if response.candidates and response.candidates[0].content.parts:
-                for part in response.candidates[0].content.parts:
-                    if part.inline_data and part.inline_data.mime_type.startswith("image/"):
-                        img_data = part.inline_data.data
-                        # バイナリデータからPIL Imageに変換
-                        import io
-
-                        img = Image.open(io.BytesIO(img_data))
-                        # 1280x720にリサイズ（アスペクト比維持）
-                        img = img.resize((1280, 720), Image.LANCZOS)
-                        img.save(out_path)
-                        print(f"[OK] v8黒板チョーク風サムネイル保存完了: {out_path}")
-                        return out_path
-
-            print("[WARN] Gemini画像生成: 画像レスポンスなし。v7フォールバックへ")
-
-        except Exception as e:
-            print(f"[WARN] Gemini画像生成失敗: {e}。v7フォールバックへ")
-
-        # ====== v7フォールバック: 従来のPillow描画 ======
-        print("[v7 FALLBACK] Pillow描画でサムネイル生成中...")
-
-        weekday = datetime.now().weekday()
-        day_color_map = {
-            0: {"title": (255, 255, 255), "outline": (60, 60, 80), "shadow": (30, 30, 50)},
-            1: {"title": (255, 140, 0), "outline": (80, 30, 0), "shadow": (50, 20, 0)},
-            2: {"title": (30, 120, 255), "outline": (255, 255, 255), "shadow": (10, 40, 100)},
-            3: {"title": (160, 100, 40), "outline": (255, 255, 255), "shadow": (60, 30, 10)},
-            4: {"title": (255, 220, 0), "outline": (80, 50, 0), "shadow": (60, 40, 0)},
-            5: {"title": (50, 100, 200), "outline": (255, 255, 255), "shadow": (20, 40, 80)},
-            6: {"title": (220, 30, 30), "outline": (255, 255, 255), "shadow": (80, 10, 10)},
-        }
-        day_colors = day_color_map.get(weekday, day_color_map[6])
-        day_names = ["月", "火", "水", "木", "金", "土", "日"]
-        print(f"[OK] 曜日カラー: {day_names[weekday]}曜日 -> タイトル色{day_colors['title']}")
-
-        bg_color = (235, 201, 136)
-        colors = {
-            "title": day_colors["title"],
-            "title_outline": day_colors["outline"],
-            "title_shadow": day_colors["shadow"],
-            "bubble_text": (30, 80, 150),
+        # ===== 喜怒哀楽の判定（台本の感情から自動判定） =====
+        emotion_to_mood = {
+            "neutral": "angry", "normal": "angry", "default": "angry",
+            "happy": "happy", "excited": "happy", "guts": "happy",
+            "laugh": "happy", "bakusho": "happy", "smile": "happy",
+            "idea": "info", "hirameki": "info",
+            "surprised": "shocking", "shocked": "shocking",
+            "concerned": "angry", "worried": "angry", "sad": "angry",
+            "tired": "angry", "yareyare": "angry", "fuseru": "angry",
+            "doyon": "angry", "question": "info", "thinking": "info",
+            "henken": "angry", "aogu": "angry", "sukashi": "info",
         }
 
-        def draw_text_with_outline(draw, pos, text, font, fill, outline, outline_width=6, shadow=None):
-            x, y = pos
-            shadow_color = shadow or (0, 0, 0, 80)
-            for offset in range(1, 8):
-                draw.text((x + offset, y + offset), text, font=font, fill=shadow_color)
-            for dx in range(-outline_width, outline_width + 1):
-                for dy in range(-outline_width, outline_width + 1):
-                    if dx != 0 or dy != 0:
-                        draw.text((x + dx, y + dy), text, font=font, fill=outline)
-            draw.text((x, y), text, font=font, fill=fill)
-
-        # 感情連動アイコン
-        emotion_to_category = {
-            "neutral": "neutral",
-            "normal": "neutral",
-            "default": "neutral",
-            "smile": "neutral",
-            "calm": "neutral",
-            "happy": "guts",
-            "excited": "guts",
-            "guts": "guts",
-            "surprised": "guts",
-            "laugh": "guts",
-            "bakusho": "guts",
-            "idea": "guts",
-            "hirameki": "guts",
-            "concerned": "yareyare",
-            "tired": "yareyare",
-            "yareyare": "yareyare",
-            "sad": "yareyare",
-            "fuseru": "yareyare",
-            "doyon": "yareyare",
-            "question": "yareyare",
-            "thinking": "yareyare",
-            "henken": "yareyare",
-            "shocked": "yareyare",
-            "aogu": "yareyare",
-            "sukashi": "yareyare",
+        # カラーパレット（喜怒哀楽連動）
+        COLOR_SCHEMES = {
+            "angry": {  # 怒/哀 → 赤背景
+                "bg": (200, 40, 40), "l1c": (255, 255, 255), "l2c": (255, 240, 80),
+                "badge_bg": (30, 30, 30), "oba": "worried", "oji": "worried",
+            },
+            "happy": {  # 喜/楽 → 青背景
+                "bg": (40, 70, 170), "l1c": (255, 255, 255), "l2c": (255, 220, 50),
+                "badge_bg": (220, 50, 50), "oba": "happy", "oji": "happy",
+            },
+            "alert": {  # 注意 → 黄背景
+                "bg": (230, 170, 30), "l1c": (255, 255, 255), "l2c": (220, 40, 40),
+                "badge_bg": (200, 40, 40), "oba": "surprised", "oji": "surprised",
+            },
+            "info": {  # 情報 → 緑背景
+                "bg": (30, 120, 70), "l1c": (255, 255, 255), "l2c": (255, 240, 80),
+                "badge_bg": (30, 30, 30), "oba": "neutral", "oji": "neutral",
+            },
+            "shocking": {  # 衝撃 → 紫背景
+                "bg": (90, 40, 150), "l1c": (255, 255, 255), "l2c": (255, 200, 50),
+                "badge_bg": (220, 50, 50), "oba": "surprised", "oji": "surprised",
+            },
         }
-        best_emotion = "neutral"
+
+        best_mood = "angry"  # デフォルト: 赤（最もクリック率が高い）
         if script:
-            emotion_counts = {"neutral": 0, "guts": 0, "yareyare": 0}
-            for line in script:
-                emo = line.get("emotion", "neutral").lower()
-                cat = emotion_to_category.get(emo, "neutral")
-                emotion_counts[cat] = emotion_counts.get(cat, 0) + 1
-            non_neutral = {k: v for k, v in emotion_counts.items() if k != "neutral"}
-            if non_neutral:
-                best_emotion = max(non_neutral, key=non_neutral.get)
-            print(f"[OK] 感情集計: {emotion_counts} -> アイコン: {best_emotion}")
+            mood_counts = {}
+            for line_data in script:
+                emo = line_data.get("emotion", "neutral").lower()
+                mood = emotion_to_mood.get(emo, "angry")
+                mood_counts[mood] = mood_counts.get(mood, 0) + 1
+            non_angry = {k: v for k, v in mood_counts.items() if k != "angry"}
+            if non_angry:
+                best_mood = max(non_angry, key=non_angry.get)
+            print(f"[OK] 感情→ムード集計: {mood_counts} -> カラー: {best_mood}")
 
-        character = random.choice(["katsumi", "hiroshi"])
-        icon_name = f"{character}_{best_emotion}.png"
-        icon_base = "remotion/public/"
+        scheme = COLOR_SCHEMES[best_mood]
 
+        # ===== サムネイル描画 =====
+        W, H = 1280, 720
+        img = Image.new("RGB", (W, H), scheme["bg"])
+
+        # キャラ画像読み込み（透過版優先）
+        def load_char_transparent(name, pose, target_h):
+            for suffix in ["_transparent.png", ".png"]:
+                p = os.path.join("assets", "character_assets", name, f"{name}_{pose}{suffix}")
+                if os.path.exists(p):
+                    ci = Image.open(p).convert("RGBA")
+                    r = target_h / ci.height
+                    return ci.resize((int(ci.width * r), target_h), Image.LANCZOS)
+            return None
+
+        ch = 220
+        oji = load_char_transparent("ojiichan", scheme["oji"], ch)
+        oba = load_char_transparent("obaachan", scheme["oba"], ch)
+
+        if oji:
+            if oji.mode == "RGBA":
+                img.paste(oji, (0, 0), oji)
+            else:
+                img.paste(oji, (0, 0))
+        if oba:
+            if oba.mode == "RGBA":
+                img.paste(oba, (W - oba.width, 0), oba)
+            else:
+                img.paste(oba, (W - oba.width, 0))
+
+        draw = ImageDraw.Draw(img)
+
+        # フォントサイズ自動調整
         bold_font_path = "assets/NotoSansCJKjp-Bold.otf"
         if not os.path.exists(bold_font_path):
             raise FileNotFoundError(f"太字フォントが見つかりません: {bold_font_path}")
 
-        title_font = ImageFont.truetype(bold_font_path, 160)
-        comment_font = ImageFont.truetype(bold_font_path, 108)
+        def fit_font(text, max_width, start_size=300):
+            for sz in range(start_size, 20, -2):
+                f = ImageFont.truetype(bold_font_path, sz)
+                tw = f.getbbox(text)[2] - f.getbbox(text)[0]
+                if tw <= max_width:
+                    return f, sz
+            return ImageFont.truetype(bold_font_path, 20), 20
 
-        img = Image.new("RGB", (1280, 720), bg_color)
-        draw = ImageDraw.Draw(img)
+        tw = int(W * 0.95)
+        f1, _ = fit_font(line1, tw)
+        f2, _ = fit_font(line2, tw)
+        y1, y2 = H * 0.42, H * 0.78
 
-        icon_path = icon_base + icon_name
-        if os.path.exists(icon_path):
-            icon = Image.open(icon_path)
-            icon = icon.resize((450, 450), Image.LANCZOS)
-            if icon.mode == "RGBA":
-                img.paste(icon, (-10, 720 - 450 + 10), icon)
-            else:
-                img.paste(icon, (-10, 720 - 450 + 10))
-            draw = ImageDraw.Draw(img)
+        # 黒影 + 本体テキスト
+        for dx, dy in [(6, 6), (4, 4)]:
+            draw.text((W // 2 + dx, y1 + dy), line1, fill=(0, 0, 0), font=f1, anchor="mm")
+            draw.text((W // 2 + dx, y2 + dy), line2, fill=(0, 0, 0), font=f2, anchor="mm")
+        draw.text((W // 2, y1), line1, fill=scheme["l1c"], font=f1, anchor="mm")
+        draw.text((W // 2, y2), line2, fill=scheme["l2c"], font=f2, anchor="mm")
 
-        bubble_x, bubble_y = 390, 370
-        bubble_w, bubble_h = 880, 340
+        # 上部バッジ
+        badge_text = comment if comment else "知らないと損！"
+        badge_font = ImageFont.truetype(bold_font_path, 72)
+        btw = badge_font.getbbox(badge_text)[2] - badge_font.getbbox(badge_text)[0]
+        badge_fg = (255, 255, 255)
+        if scheme["badge_bg"][0] > 200 and scheme["badge_bg"][1] > 150:
+            badge_fg = (30, 30, 30)
         draw.rounded_rectangle(
-            [bubble_x, bubble_y, bubble_x + bubble_w, bubble_y + bubble_h],
-            radius=50,
-            fill=(255, 255, 255),
-            outline=(100, 100, 100),
-            width=4,
+            [W // 2 - btw // 2 - 22, 50 - 72 // 2 - 8, W // 2 + btw // 2 + 22, 50 + 72 // 2 + 8],
+            radius=16, fill=scheme["badge_bg"],
         )
-        tail_points = [
-            (bubble_x + 40, bubble_y + bubble_h // 2 + 20),
-            (bubble_x - 30, bubble_y + bubble_h - 40),
-            (bubble_x + 80, bubble_y + bubble_h - 20),
-        ]
-        draw.polygon(tail_points, fill=(255, 255, 255), outline=(100, 100, 100))
-        draw.line(
-            [(bubble_x + 40, bubble_y + bubble_h // 2 + 20), (bubble_x + 80, bubble_y + bubble_h - 20)],
-            fill=(255, 255, 255),
-            width=8,
-        )
+        draw.text((W // 2, 50), badge_text, fill=badge_fg, font=badge_font, anchor="mm")
 
-        if comment:
-            comment_lines = comment.split("\n")[:2]
-        else:
-            comment_lines = ["これは", "要チェックよ!"]
-        comment_y_start = bubble_y + 20
-        comment_line_height = 145
-        for j, line in enumerate(comment_lines):
-            bbox = draw.textbbox((0, 0), line, font=comment_font)
-            text_w = bbox[2] - bbox[0]
-            draw.text(
-                (bubble_x + (bubble_w - text_w) // 2, comment_y_start + j * comment_line_height),
-                line,
-                fill=colors["bubble_text"],
-                font=comment_font,
-            )
-
-        y_positions = [-10, 175]
-        x_positions = [20, 350]
-        for j, line in enumerate(title_lines):
-            x_pos = x_positions[j] if j < len(x_positions) else x_positions[-1]
-            draw_text_with_outline(
-                draw,
-                (x_pos, y_positions[j] if j < len(y_positions) else y_positions[-1] + 190),
-                line,
-                title_font,
-                colors["title"],
-                colors["title_outline"],
-                shadow=colors.get("title_shadow"),
-            )
-
-        img.save(out_path)
-        print(f"[OK] v7フォールバックサムネイル保存完了: {out_path} (icon: {icon_name})")
+        img.save(out_path, quality=95)
+        print(f"[OK] v10サムネイル保存完了: {out_path} (mood: {best_mood})")
         return out_path
 
     def synthesize_with_edge_tts(self, text, voice, output_path):
