@@ -881,6 +881,7 @@ class VideoEngineV4:
         stats_section = f"\n\n【統計データ（チャート用）】\n{stats_brief}" if stats_brief else ""
         news_content = f"""【{theme}のストーリー素材（メインコンテンツ）】
 {story_summary}
+{stats_section}"""
 
         # promptをストーリー素材で更新（構成生成で使用）
         prompt = news_content
@@ -2689,14 +2690,14 @@ Warm, nostalgic, inviting feeling. Simple clear compositions. 16:9 landscape asp
         props_json = json.dumps(props, ensure_ascii=False)
 
         cmd = [
-            "npx",
+            "npx.cmd",
             "remotion",
             "render",
             "src/index.ts",
             "DynamicNewsVideo",
             output_path,
             "--props",
-            props_json,
+            os.path.abspath(props_path),
             "--concurrency",
             "2",  # 並列処理数を制限して安定化
         ]
@@ -3357,7 +3358,7 @@ Warm, nostalgic, inviting feeling. Simple clear compositions. 16:9 landscape asp
             # propsを絶対パスで指定（GitHub Actions対応）
             # タイムアウトを120秒に設定してリトライ
             render_cmd = [
-                "npx",
+                "npx.cmd",
                 "remotion",
                 "render",
                 "src/index.ts",

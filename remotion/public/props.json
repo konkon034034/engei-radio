@@ -1,0 +1,467 @@
+{
+  "title": "【#5】【園芸】夫を亡くした72歳、月14万円年金でヒヤシンスに救われた日々",
+  "summary": "夫の他界後、庭のヒヤシンスを育てることで心の支えを見つけた小林春子さん（72歳）の慎ましい日常に密着。質素な年金暮らしの中で、花を育てる喜びを見出す姿を追います。",
+  "keyPoints": [
+    "年金14万円で工夫を凝らした生活",
+    "夫の遺した庭を守る決意",
+    "ヒヤシンスが心の支え"
+  ],
+  "script": [
+    {
+      "speaker": "カツミ",
+      "text": "ちょっと聞いてよヒロシ。小林春子さんって方、72歳で一人暮らしなんだけどね。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "concerned",
+      "startFrame": 168,
+      "endFrame": 356
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "はい。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 356,
+      "endFrame": 382
+    },
+    {
+      "speaker": "カツミ",
+      "text": "小学校の先生だったんだけど、ご主人が急に亡くなって、年金が月14万円しかないの。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "surprised",
+      "startFrame": 382,
+      "endFrame": 580
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "14万円ですか。厳しいですね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 580,
+      "endFrame": 662
+    },
+    {
+      "speaker": "カツミ",
+      "text": "そうなのよ。でもね、庭のヒヤシンスを育てて、それが心の支えになってるんだって。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 662,
+      "endFrame": 856
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "ヒヤシンスですか。素敵ですね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 856,
+      "endFrame": 937
+    },
+    {
+      "speaker": "カツミ",
+      "text": "ご主人が残した庭を守りながら、毎日水をあげたり、手入れしたりしてるんだって。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 937,
+      "endFrame": 1126
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "えらいですね。でも、月14万円でどうやって生活してるんでしょうか。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "question",
+      "startFrame": 1126,
+      "endFrame": 1292
+    },
+    {
+      "speaker": "カツミ",
+      "text": "それがね、本当に質素なの。食費は月2万円くらいだって。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "surprised",
+      "startFrame": 1292,
+      "endFrame": 1429
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "2万円ですか！それはすごいですね。総務省の家計調査だと、高齢単身世帯の平均食費は4万円近いですよ。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 1429,
+      "endFrame": 1670
+    },
+    {
+      "speaker": "カツミ",
+      "text": "でしょ？光熱費も節約して、月1万2千円くらいに抑えてるんだって。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "surprised",
+      "startFrame": 1670,
+      "endFrame": 1830
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "光熱費1万2千円...。うちの母親はもっと使ってると思います。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "concerned",
+      "startFrame": 1830,
+      "endFrame": 1987
+    },
+    {
+      "speaker": "カツミ",
+      "text": "家賃が4万円だから、残り7万円弱で生活してる計算よね。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 1987,
+      "endFrame": 2124
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "7万円で食費、日用品、医療費…。本当にやりくり上手ですね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "concerned",
+      "startFrame": 2124,
+      "endFrame": 2271
+    },
+    {
+      "speaker": "カツミ",
+      "text": "庭で育てた野菜を食べるようにしてるんだって。知らないと損よ、こういうの。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 2271,
+      "endFrame": 2451
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "確かに、家庭菜園は食費の節約になりますよね。でも、それだけじゃ生活は厳しいはずです。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "concerned",
+      "startFrame": 2451,
+      "endFrame": 2658
+    },
+    {
+      "speaker": "カツミ",
+      "text": "そうなのよ。だから、古い着物をリメイクしたり、近所の人からおすそ分けしてもらったり、工夫してるの。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 2658,
+      "endFrame": 2899
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "助け合いの精神ですね。でも、年金だけで生活するのは本当に大変だと思います。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "concerned",
+      "startFrame": 2899,
+      "endFrame": 3083
+    },
+    {
+      "speaker": "カツミ",
+      "text": "本当にそうよね。私の場合はパートしてたから、まだ余裕があったけど…。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 3083,
+      "endFrame": 3253
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "統計によると、65歳以上の単身女性の平均年金受給額は月13万円程度らしいですよ。小林さんは少し多いくらいですね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 3253,
+      "endFrame": 3526
+    },
+    {
+      "speaker": "カツミ",
+      "text": "それでも、生活は楽じゃないわよね。でも、ヒヤシンスが咲くのを見るのが楽しみなんだって。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 3526,
+      "endFrame": 3738
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "小さな楽しみを見つけることが大切ですね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 3738,
+      "endFrame": 3843
+    },
+    {
+      "speaker": "カツミ",
+      "text": "そうそう。それに、ご主人が残してくれた庭を守りたいっていう気持ちもあるんだって。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 3843,
+      "endFrame": 4042
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "素敵な話ですね。うちの妻も、庭の花を大切にしてますよ。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 4042,
+      "endFrame": 4179
+    },
+    {
+      "speaker": "カツミ",
+      "text": "この方、本当に頑張ってるわよね。私も見習わないと。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 4179,
+      "endFrame": 4307
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "ええ、本当にそう思います。僕も、もっと節約しないといけないですね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "concerned",
+      "startFrame": 4307,
+      "endFrame": 4473
+    },
+    {
+      "speaker": "カツミ",
+      "text": "知らないと損する情報って、意外と多いのよね。年金とか、保険とか。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 4473,
+      "endFrame": 4634
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "そうですね。そういう情報を、もっと分かりやすく伝えられるようにしたいですね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 4634,
+      "endFrame": 4823
+    },
+    {
+      "speaker": "カツミ",
+      "text": "本当に。でも、この方を見てると、私も頑張ろうって思えるわ。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 4823,
+      "endFrame": 4970
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "ええ。みんな、それぞれの場所で頑張ってるんですよね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 4970,
+      "endFrame": 5103
+    },
+    {
+      "speaker": "カツミ",
+      "text": "そうよね。私も、もっとヒヤシンスを植えてみようかしら。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 5103,
+      "endFrame": 5240
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "いいですね。花のある生活は、心を豊かにしてくれますからね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 5240,
+      "endFrame": 5387
+    },
+    {
+      "speaker": "カツミ",
+      "text": "本当にそうよね。まあ、なんとか頑張っていきましょうよ！",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 5387,
+      "endFrame": 5525
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "ええ、頑張っていきましょう！",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 5525,
+      "endFrame": 5602
+    },
+    {
+      "speaker": "カツミ",
+      "text": "笑うしかないわよね！",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 5602,
+      "endFrame": 5660
+    }
+  ],
+  "durationInFrames": 5660,
+  "audioPath": "audio.wav",
+  "channelName": "園芸ラジオ",
+  "channelColor": "#e74c3c",
+  "source": "独自取材",
+  "backgroundImage": "background.png",
+  "slideDuration": 168,
+  "hikaeshitsuSlide": "",
+  "hikaeshitsuJingle": "hikaeshitsu_jingle.mp3",
+  "subtitleStyle": "highlight",
+  "subtitleColor": "rgba(220,140,30,0.5)",
+  "chartData": [
+    {
+      "data": {
+        "type": "pie",
+        "label": "年金が月",
+        "value": 140000,
+        "unit": "円",
+        "negative": false,
+        "subtitle": "小学校の先生だったんだけど、ご主人が急に"
+      },
+      "triggerFrame": 382
+    },
+    {
+      "data": {
+        "type": "number",
+        "label": "でも、月",
+        "value": 140000,
+        "unit": "円",
+        "negative": false,
+        "subtitle": "でも、月14万円でどうやって生活してるん"
+      },
+      "triggerFrame": 1126
+    },
+    {
+      "data": {
+        "type": "poll",
+        "label": "小林さんの生活で、食費の割合はどのくらい",
+        "value": 0,
+        "unit": "",
+        "items": [
+          {
+            "label": "10%未満",
+            "value": 15
+          },
+          {
+            "label": "10%～20%",
+            "value": 65
+          },
+          {
+            "label": "20%～30%",
+            "value": 20
+          }
+        ],
+        "subtitle": "出典：独自取材"
+      },
+      "triggerFrame": 1830
+    },
+    {
+      "data": {
+        "type": "number",
+        "label": "家賃が4万円だから、残り7万円",
+        "value": 40000,
+        "unit": "円",
+        "negative": false,
+        "subtitle": "家賃が4万円だから、残り7万円弱で生活し"
+      },
+      "triggerFrame": 1987
+    },
+    {
+      "data": {
+        "type": "number",
+        "label": "単身女性の平均年金受給額は月",
+        "value": 130000,
+        "unit": "円",
+        "negative": false,
+        "subtitle": "統計によると、65歳以上の単身女性の平均"
+      },
+      "triggerFrame": 3253
+    },
+    {
+      "data": {
+        "type": "poll",
+        "label": "65歳以上単身女性の平均年金受給額は？",
+        "value": 0,
+        "unit": "",
+        "items": [
+          {
+            "label": "10万円未満",
+            "value": 20
+          },
+          {
+            "label": "10万円～15万",
+            "value": 60
+          },
+          {
+            "label": "15万円以上",
+            "value": 20
+          }
+        ],
+        "subtitle": "出典：厚生労働省 年金制度基礎調査"
+      },
+      "triggerFrame": 3843
+    }
+  ],
+  "ticker": [
+    "【カツミのぼやき】最近ね、スマホの文字が小さくて困ってるの。孫に拡大の仕方教えてもらったんだけど、すぐ戻っちゃうのよ。でもこのチャンネルの字幕は大きくていいわよね。私が設計したんだけどね、えへへ。",
+    "【ヒロシのぼやき】週末に釣り行きたいんだけどさ、子供の習い事の送り迎えと、スーパーの買い出しと、洗濯と...いつの間にか日曜の夜になってるんですよ。サザエさん症候群ってやつですね。"
+  ],
+  "countUpData": [],
+  "layoutPattern": "documentary",
+  "householdBudget": {
+    "personLabel": "70歳夫婦・都内在住",
+    "income": 148000,
+    "expenses": [
+      {
+        "label": "家賃",
+        "amount": 55000
+      },
+      {
+        "label": "食費",
+        "amount": 40000
+      },
+      {
+        "label": "医療費",
+        "amount": 8000
+      },
+      {
+        "label": "光熱費",
+        "amount": 12000
+      },
+      {
+        "label": "通信費",
+        "amount": 7000
+      },
+      {
+        "label": "その他",
+        "amount": 8000
+      }
+    ]
+  }
+}
