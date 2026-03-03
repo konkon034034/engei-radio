@@ -3,7 +3,7 @@ name: Daily Post
 on:
   schedule:
     # 毎日 08:00 JST (23:00 UTC 前日)
-    - cron: '0 23 * * *'
+    - cron: cron: '30 3 * * *'
   workflow_dispatch: # 手動実行も可能にする
     inputs:
       force_manual_day:
