@@ -3970,10 +3970,32 @@ Example:
 
                 print("\n" + "=" * 60)
                 if video_id:
+                    video_url = f"https://www.youtube.com/watch?v={video_id}"
                     print(f"[OK] 全処理完了 | 動画ID: {video_id}")
+                    print(f"[OK] URL: {video_url}")
                     # エピソード番号表示（YouTube API動画数ベース）
                     episode_num = content.get("episode_number", 1)
                     print(f"[OK] エピソード番号 #{episode_num}（YouTube動画数ベース）")
+
+                    # ダッシュボード用: upload_result.json書き出し
+                    try:
+                        from datetime import datetime as _dt
+                        upload_result = {
+                            "channel_name": self.channel_name,
+                            "video_id": video_id,
+                            "url": video_url,
+                            "title": content.get("title", ""),
+                            "date": _dt.now().strftime("%Y-%m-%d %H:%M"),
+                            "status": "success"
+                        }
+                        result_dir = os.path.join(SCRIPT_DIR, "..", "output")
+                        os.makedirs(result_dir, exist_ok=True)
+                        result_path = os.path.join(result_dir, "upload_result.json")
+                        with open(result_path, "w", encoding="utf-8") as f:
+                            json.dump(upload_result, f, ensure_ascii=False, indent=2)
+                        print(f"[OK] upload_result.json 書き出し完了")
+                    except Exception as e:
+                        print(f"[WARN] upload_result.json 書き出し失敗: {e}")
                 else:
                     print(f"[ERR] 動画ファイル生成完了（アップロード失敗）: {video_path}")
                     print("[ERR] YouTube アップロードに失敗しました。ワークフローを失敗として終了します。")

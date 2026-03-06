@@ -1,333 +1,342 @@
 {
-  "title": "【#5】【園芸】夫を亡くした72歳、月14万円年金でヒヤシンスに救われた日々",
-  "summary": "夫の他界後、庭のヒヤシンスを育てることで心の支えを見つけた小林春子さん（72歳）の慎ましい日常に密着。質素な年金暮らしの中で、花を育てる喜びを見出す姿を追います。",
+  "title": "【#5】【暮らし】月15万円で生きる76歳、夫を失った元教師が見つけた「心の豊かさ」",
+  "summary": "夫の死をきっかけにミニマリスト生活を始めた76歳の佐倉節子さん。月15万円の年金収入で、質素ながらも豊かな生活を送る彼女の日常に密着。平均的な高齢者世帯との生活費比較を通して、節約術と心の持ち方を学びます。",
   "keyPoints": [
-    "年金14万円で工夫を凝らした生活",
-    "夫の遺した庭を守る決意",
-    "ヒヤシンスが心の支え"
+    "元教師ならではの言葉を大切にする生活",
+    "遺品整理をきっかけにミニマリストへ",
+    "平均より大幅に低い生活費で精神的な豊かさを実現"
   ],
   "script": [
     {
       "speaker": "カツミ",
-      "text": "ちょっと聞いてよヒロシ。小林春子さんって方、72歳で一人暮らしなんだけどね。",
-      "voice": "Kazuha",
-      "section": "main",
-      "emotion": "concerned",
-      "startFrame": 168,
-      "endFrame": 356
-    },
-    {
-      "speaker": "ヒロシ",
-      "text": "はい。",
-      "voice": "Takumi",
-      "section": "main",
-      "emotion": "thinking",
-      "startFrame": 356,
-      "endFrame": 382
-    },
-    {
-      "speaker": "カツミ",
-      "text": "小学校の先生だったんだけど、ご主人が急に亡くなって、年金が月14万円しかないの。",
+      "text": "ちょっと聞いてよヒロシ。この佐倉さんって方、76歳で一人暮らしなんだけど、月15万円の年金で生活してるんだって。",
       "voice": "Kazuha",
       "section": "main",
       "emotion": "surprised",
-      "startFrame": 382,
-      "endFrame": 580
+      "startFrame": 168,
+      "endFrame": 429
     },
     {
       "speaker": "ヒロシ",
-      "text": "14万円ですか。厳しいですね。",
+      "text": "15万円ですか。それは厳しいですね。どんな生活をされているんでしょうか。",
       "voice": "Takumi",
       "section": "main",
-      "emotion": "thinking",
-      "startFrame": 580,
-      "endFrame": 662
+      "emotion": "concerned",
+      "startFrame": 429,
+      "endFrame": 600
     },
     {
       "speaker": "カツミ",
-      "text": "そうなのよ。でもね、庭のヒヤシンスを育てて、それが心の支えになってるんだって。",
+      "text": "元中学校の国語教師でね、ご主人が亡くなってから、物の価値観を見直してミニマリストになったらしいの。",
       "voice": "Kazuha",
-      "section": "main",
-      "emotion": "happy",
-      "startFrame": 662,
-      "endFrame": 856
-    },
-    {
-      "speaker": "ヒロシ",
-      "text": "ヒヤシンスですか。素敵ですね。",
-      "voice": "Takumi",
-      "section": "main",
-      "emotion": "thinking",
-      "startFrame": 856,
-      "endFrame": 937
-    },
-    {
-      "speaker": "カツミ",
-      "text": "ご主人が残した庭を守りながら、毎日水をあげたり、手入れしたりしてるんだって。",
-      "voice": "Kazuha",
-      "section": "main",
-      "emotion": "happy",
-      "startFrame": 937,
-      "endFrame": 1126
-    },
-    {
-      "speaker": "ヒロシ",
-      "text": "えらいですね。でも、月14万円でどうやって生活してるんでしょうか。",
-      "voice": "Takumi",
       "section": "main",
       "emotion": "question",
-      "startFrame": 1126,
-      "endFrame": 1292
+      "startFrame": 600,
+      "endFrame": 830
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "きっかけがあったんですね。物を減らすことで心の整理にも繋がると。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 830,
+      "endFrame": 984
     },
     {
       "speaker": "カツミ",
-      "text": "それがね、本当に質素なの。食費は月2万円くらいだって。",
+      "text": "そうそう。朝はラジオ体操から始まるみたい。テレビはほとんど見ないって。電気代がもったいないからって。",
       "voice": "Kazuha",
       "section": "main",
       "emotion": "surprised",
-      "startFrame": 1292,
-      "endFrame": 1429
+      "startFrame": 984,
+      "endFrame": 1219
     },
     {
       "speaker": "ヒロシ",
-      "text": "2万円ですか！それはすごいですね。総務省の家計調査だと、高齢単身世帯の平均食費は4万円近いですよ。",
+      "text": "ラジオですか。うちの母親もラジオよく聞いてました。情報源としては意外と侮れないんですよね。",
       "voice": "Takumi",
       "section": "main",
       "emotion": "thinking",
-      "startFrame": 1429,
-      "endFrame": 1670
+      "startFrame": 1219,
+      "endFrame": 1431
     },
     {
       "speaker": "カツミ",
-      "text": "でしょ？光熱費も節約して、月1万2千円くらいに抑えてるんだって。",
+      "text": "でも、月15万円でしょ。家賃が4万円、光熱費が1万2千円、保険料引かれたら、食費とか日用品、医療費で6万円くらいしか残らないんじゃない？",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "concerned",
+      "startFrame": 1431,
+      "endFrame": 1745
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "ええ。総務省の家計調査によると、単身高齢者の平均生活費は月13万円程度ですから、かなり切り詰めてますね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 1745,
+      "endFrame": 1989
+    },
+    {
+      "speaker": "カツミ",
+      "text": "そうなのよ！でもね、この方、全然暗くないの。図書館で本を借りたり、近所を散歩したり、小さな楽しみを見つけて生活してるのよ。",
       "voice": "Kazuha",
       "section": "main",
       "emotion": "surprised",
-      "startFrame": 1670,
-      "endFrame": 1830
+      "startFrame": 1989,
+      "endFrame": 2272
     },
     {
       "speaker": "ヒロシ",
-      "text": "光熱費1万2千円...。うちの母親はもっと使ってると思います。",
+      "text": "素晴らしいですね。お金だけが全てじゃないってことを体現されていますね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 2272,
+      "endFrame": 2439
+    },
+    {
+      "speaker": "カツミ",
+      "text": "食費は月2万円くらいらしいわよ。スーパーの見切り品を上手に利用したり、自炊を徹底したり。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "surprised",
+      "startFrame": 2439,
+      "endFrame": 2647
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "2万円ですか！それはすごい。スーパーで半額シールが貼られるのを待つのも、ある意味技術ですよね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 2647,
+      "endFrame": 2868
+    },
+    {
+      "speaker": "カツミ",
+      "text": "うちもやるわよ！夕方になるとスーパーに行くの。知らないと損だもんね。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "surprised",
+      "startFrame": 2868,
+      "endFrame": 3031
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "まさに損失回避ですね。少しでもお得に買いたいという気持ちは、誰にでもあると思います。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 3031,
+      "endFrame": 3230
+    },
+    {
+      "speaker": "カツミ",
+      "text": "水道光熱費を抑えるために、お風呂は週に3回にして、シャワーを短時間で済ませるとか。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "concerned",
+      "startFrame": 3230,
+      "endFrame": 3424
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "徹底してますね。でも、無理はしてほしくないですね。健康が一番ですから。",
       "voice": "Takumi",
       "section": "main",
       "emotion": "concerned",
-      "startFrame": 1830,
-      "endFrame": 1987
+      "startFrame": 3424,
+      "endFrame": 3591
     },
     {
       "speaker": "カツミ",
-      "text": "家賃が4万円だから、残り7万円弱で生活してる計算よね。",
+      "text": "そうよね。でも、この方、楽しみもちゃんとあるのよ。月に一度、近所の喫茶店でモーニングを食べるのが楽しみなんだって。",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 3591,
+      "endFrame": 3857
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "ささやかな幸せですね。そういう小さな楽しみが、日々の生活を支えてくれるんですよね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 3857,
+      "endFrame": 4051
+    },
+    {
+      "speaker": "カツミ",
+      "text": "本当にそうよね。それに、ご主人の遺品を大切に使っているんだって。物を捨てるのは簡単だけど、思い出を大切にするって素敵なことよね。",
       "voice": "Kazuha",
       "section": "main",
       "emotion": "thinking",
-      "startFrame": 1987,
-      "endFrame": 2124
+      "startFrame": 4051,
+      "endFrame": 4348
     },
     {
       "speaker": "ヒロシ",
-      "text": "7万円で食費、日用品、医療費…。本当にやりくり上手ですね。",
-      "voice": "Takumi",
-      "section": "main",
-      "emotion": "concerned",
-      "startFrame": 2124,
-      "endFrame": 2271
-    },
-    {
-      "speaker": "カツミ",
-      "text": "庭で育てた野菜を食べるようにしてるんだって。知らないと損よ、こういうの。",
-      "voice": "Kazuha",
-      "section": "main",
-      "emotion": "thinking",
-      "startFrame": 2271,
-      "endFrame": 2451
-    },
-    {
-      "speaker": "ヒロシ",
-      "text": "確かに、家庭菜園は食費の節約になりますよね。でも、それだけじゃ生活は厳しいはずです。",
-      "voice": "Takumi",
-      "section": "main",
-      "emotion": "concerned",
-      "startFrame": 2451,
-      "endFrame": 2658
-    },
-    {
-      "speaker": "カツミ",
-      "text": "そうなのよ。だから、古い着物をリメイクしたり、近所の人からおすそ分けしてもらったり、工夫してるの。",
-      "voice": "Kazuha",
-      "section": "main",
-      "emotion": "happy",
-      "startFrame": 2658,
-      "endFrame": 2899
-    },
-    {
-      "speaker": "ヒロシ",
-      "text": "助け合いの精神ですね。でも、年金だけで生活するのは本当に大変だと思います。",
-      "voice": "Takumi",
-      "section": "main",
-      "emotion": "concerned",
-      "startFrame": 2899,
-      "endFrame": 3083
-    },
-    {
-      "speaker": "カツミ",
-      "text": "本当にそうよね。私の場合はパートしてたから、まだ余裕があったけど…。",
-      "voice": "Kazuha",
-      "section": "main",
-      "emotion": "thinking",
-      "startFrame": 3083,
-      "endFrame": 3253
-    },
-    {
-      "speaker": "ヒロシ",
-      "text": "統計によると、65歳以上の単身女性の平均年金受給額は月13万円程度らしいですよ。小林さんは少し多いくらいですね。",
+      "text": "分かります。うちも祖母の着物をリメイクして、妻が使っています。物には思い出が詰まっていますからね。",
       "voice": "Takumi",
       "section": "main",
       "emotion": "thinking",
-      "startFrame": 3253,
-      "endFrame": 3526
+      "startFrame": 4348,
+      "endFrame": 4578
     },
     {
       "speaker": "カツミ",
-      "text": "それでも、生活は楽じゃないわよね。でも、ヒヤシンスが咲くのを見るのが楽しみなんだって。",
+      "text": "でも、75歳以上の夫婦二人暮らしの平均生活費って、月27万円くらいって言うじゃない？佐倉さんの生活費は半分以下よ。",
       "voice": "Kazuha",
       "section": "main",
-      "emotion": "happy",
-      "startFrame": 3526,
-      "endFrame": 3738
+      "emotion": "surprised",
+      "startFrame": 4578,
+      "endFrame": 4843
     },
     {
       "speaker": "ヒロシ",
-      "text": "小さな楽しみを見つけることが大切ですね。",
+      "text": "そうですね。LIMOの記事にも出てましたが、高齢夫婦の平均生活費はそれくらいですよね。佐倉さんの生活費がいかに抑えられているか分かります。",
       "voice": "Takumi",
       "section": "main",
       "emotion": "thinking",
-      "startFrame": 3738,
-      "endFrame": 3843
+      "startFrame": 4843,
+      "endFrame": 5162
     },
     {
       "speaker": "カツミ",
-      "text": "そうそう。それに、ご主人が残してくれた庭を守りたいっていう気持ちもあるんだって。",
+      "text": "本当にすごいわ。でも、無理してるわけじゃなくて、自分らしい生き方を見つけているんだよね。",
       "voice": "Kazuha",
       "section": "main",
       "emotion": "happy",
-      "startFrame": 3843,
-      "endFrame": 4042
+      "startFrame": 5162,
+      "endFrame": 5370
     },
     {
       "speaker": "ヒロシ",
-      "text": "素敵な話ですね。うちの妻も、庭の花を大切にしてますよ。",
-      "voice": "Takumi",
-      "section": "main",
-      "emotion": "happy",
-      "startFrame": 4042,
-      "endFrame": 4179
-    },
-    {
-      "speaker": "カツミ",
-      "text": "この方、本当に頑張ってるわよね。私も見習わないと。",
-      "voice": "Kazuha",
-      "section": "main",
-      "emotion": "thinking",
-      "startFrame": 4179,
-      "endFrame": 4307
-    },
-    {
-      "speaker": "ヒロシ",
-      "text": "ええ、本当にそう思います。僕も、もっと節約しないといけないですね。",
-      "voice": "Takumi",
-      "section": "main",
-      "emotion": "concerned",
-      "startFrame": 4307,
-      "endFrame": 4473
-    },
-    {
-      "speaker": "カツミ",
-      "text": "知らないと損する情報って、意外と多いのよね。年金とか、保険とか。",
-      "voice": "Kazuha",
-      "section": "main",
-      "emotion": "thinking",
-      "startFrame": 4473,
-      "endFrame": 4634
-    },
-    {
-      "speaker": "ヒロシ",
-      "text": "そうですね。そういう情報を、もっと分かりやすく伝えられるようにしたいですね。",
+      "text": "ええ。ミニマリスト生活は、ある意味、究極の選択ですよね。本当に必要なものだけを選んで生きる。",
       "voice": "Takumi",
       "section": "main",
       "emotion": "thinking",
-      "startFrame": 4634,
-      "endFrame": 4823
+      "startFrame": 5370,
+      "endFrame": 5586
     },
     {
       "speaker": "カツミ",
-      "text": "本当に。でも、この方を見てると、私も頑張ろうって思えるわ。",
+      "text": "でも、知らないと損することってたくさんあるわよね。年金のこととか、医療費控除のこととか。",
       "voice": "Kazuha",
       "section": "main",
-      "emotion": "happy",
-      "startFrame": 4823,
-      "endFrame": 4970
+      "emotion": "question",
+      "startFrame": 5586,
+      "endFrame": 5794
     },
     {
       "speaker": "ヒロシ",
-      "text": "ええ。みんな、それぞれの場所で頑張ってるんですよね。",
+      "text": "そうですね。意外と見落としがちな制度も多いですからね。情報をしっかり集めることが大切ですね。",
       "voice": "Takumi",
       "section": "main",
       "emotion": "thinking",
-      "startFrame": 4970,
-      "endFrame": 5103
+      "startFrame": 5794,
+      "endFrame": 6010
     },
     {
       "speaker": "カツミ",
-      "text": "そうよね。私も、もっとヒヤシンスを植えてみようかしら。",
+      "text": "本当にそう思うわ。この佐倉さんの生き方を見てると、お金がなくても、心豊かに生きられるんだって勇気をもらえるわ。",
       "voice": "Kazuha",
       "section": "main",
       "emotion": "happy",
-      "startFrame": 5103,
-      "endFrame": 5240
+      "startFrame": 6010,
+      "endFrame": 6267
     },
     {
       "speaker": "ヒロシ",
-      "text": "いいですね。花のある生活は、心を豊かにしてくれますからね。",
+      "text": "ええ。僕もそう思います。お金は大切ですが、それだけが人生の価値ではないということですよね。",
       "voice": "Takumi",
       "section": "main",
       "emotion": "happy",
-      "startFrame": 5240,
-      "endFrame": 5387
+      "startFrame": 6267,
+      "endFrame": 6479
     },
     {
       "speaker": "カツミ",
-      "text": "本当にそうよね。まあ、なんとか頑張っていきましょうよ！",
+      "text": "そうよね。みんな、それぞれの状況で必死に生きてるんだよね。",
       "voice": "Kazuha",
       "section": "main",
-      "emotion": "happy",
-      "startFrame": 5387,
-      "endFrame": 5525
+      "emotion": "thinking",
+      "startFrame": 6479,
+      "endFrame": 6620
     },
     {
       "speaker": "ヒロシ",
-      "text": "ええ、頑張っていきましょう！",
+      "text": "ええ。本当にそう思います。今回の佐倉さんのように、頑張って生活されている方がたくさんいらっしゃるんですよね。",
       "voice": "Takumi",
       "section": "main",
-      "emotion": "happy",
-      "startFrame": 5525,
-      "endFrame": 5602
+      "emotion": "thinking",
+      "startFrame": 6620,
+      "endFrame": 6872
     },
     {
       "speaker": "カツミ",
-      "text": "笑うしかないわよね！",
+      "text": "私も頑張らないと！",
       "voice": "Kazuha",
       "section": "main",
       "emotion": "happy",
-      "startFrame": 5602,
-      "endFrame": 5660
+      "startFrame": 6872,
+      "endFrame": 6923
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "本当にそうですね。みんな頑張ってるんですよね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 6923,
+      "endFrame": 7037
+    },
+    {
+      "speaker": "カツミ",
+      "text": "ほんとよねぇ。まぁ、なんとか頑張っていきましょうよ！（笑）",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 7037,
+      "endFrame": 7178
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "そうですね！頑張っていきましょう！",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "happy",
+      "startFrame": 7178,
+      "endFrame": 7265
+    },
+    {
+      "speaker": "カツミ",
+      "text": "それにしても、佐倉さんのような暮らし方、これ知ってる人だけ得してるわよね！",
+      "voice": "Kazuha",
+      "section": "main",
+      "emotion": "surprised",
+      "startFrame": 7265,
+      "endFrame": 7441
+    },
+    {
+      "speaker": "ヒロシ",
+      "text": "確かにそうですね！知らないと損する情報、まだまだありそうですね。",
+      "voice": "Takumi",
+      "section": "main",
+      "emotion": "thinking",
+      "startFrame": 7441,
+      "endFrame": 7595
     }
   ],
-  "durationInFrames": 5660,
+  "durationInFrames": 7595,
   "audioPath": "audio.wav",
-  "channelName": "園芸ラジオ",
+  "channelName": "default",
   "channelColor": "#e74c3c",
-  "source": "独自取材",
+  "source": "総務省家計調査、LIMO | くらしとお金の経済メディア",
   "backgroundImage": "background.png",
   "slideDuration": 168,
   "hikaeshitsuSlide": "",
@@ -337,130 +346,138 @@
   "chartData": [
     {
       "data": {
-        "type": "pie",
-        "label": "年金が月",
-        "value": 140000,
+        "type": "number",
+        "label": "一人暮らしなんだけど、月",
+        "value": 150000,
         "unit": "円",
         "negative": false,
-        "subtitle": "小学校の先生だったんだけど、ご主人が急に"
+        "subtitle": "この佐倉さんって方、76歳で一人暮らしな"
       },
-      "triggerFrame": 382
+      "triggerFrame": 168
     },
     {
       "data": {
         "type": "number",
         "label": "でも、月",
-        "value": 140000,
+        "value": 150000,
         "unit": "円",
         "negative": false,
-        "subtitle": "でも、月14万円でどうやって生活してるん"
+        "subtitle": "でも、月15万円でしょ"
       },
-      "triggerFrame": 1126
+      "triggerFrame": 1431
+    },
+    {
+      "data": {
+        "type": "number",
+        "label": "食費は月",
+        "value": 20000,
+        "unit": "円",
+        "negative": false,
+        "subtitle": "食費は月2万円くらいらしいわよ"
+      },
+      "triggerFrame": 2439
     },
     {
       "data": {
         "type": "poll",
-        "label": "小林さんの生活で、食費の割合はどのくらい",
+        "label": "佐倉さんのような生活スタイル、どう思いま",
         "value": 0,
         "unit": "",
         "items": [
           {
-            "label": "10%未満",
-            "value": 15
-          },
-          {
-            "label": "10%～20%",
+            "label": "とても良いと思う",
             "value": 65
           },
           {
-            "label": "20%～30%",
-            "value": 20
+            "label": "まあまあ良いと思",
+            "value": 25
+          },
+          {
+            "label": "どちらとも言えな",
+            "value": 5
+          },
+          {
+            "label": "あまり良いと思わ",
+            "value": 3
           }
         ],
-        "subtitle": "出典：独自取材"
+        "subtitle": "出典：番組独自アンケート"
       },
-      "triggerFrame": 1830
+      "triggerFrame": 2868
     },
     {
       "data": {
         "type": "number",
-        "label": "家賃が4万円だから、残り7万円",
-        "value": 40000,
+        "label": "二人暮らしの平均生活費って、月",
+        "value": 270000,
         "unit": "円",
         "negative": false,
-        "subtitle": "家賃が4万円だから、残り7万円弱で生活し"
+        "subtitle": "でも、75歳以上の夫婦二人暮らしの平均生"
       },
-      "triggerFrame": 1987
-    },
-    {
-      "data": {
-        "type": "number",
-        "label": "単身女性の平均年金受給額は月",
-        "value": 130000,
-        "unit": "円",
-        "negative": false,
-        "subtitle": "統計によると、65歳以上の単身女性の平均"
-      },
-      "triggerFrame": 3253
+      "triggerFrame": 4578
     },
     {
       "data": {
         "type": "poll",
-        "label": "65歳以上単身女性の平均年金受給額は？",
+        "label": "高齢者の生活費、月いくらくらいが理想だと",
         "value": 0,
         "unit": "",
         "items": [
           {
-            "label": "10万円未満",
-            "value": 20
+            "label": "10万円以下",
+            "value": 5
           },
           {
             "label": "10万円～15万",
-            "value": 60
+            "value": 20
           },
           {
-            "label": "15万円以上",
+            "label": "15万円～20万",
+            "value": 45
+          },
+          {
+            "label": "20万円～25万",
             "value": 20
           }
         ],
-        "subtitle": "出典：厚生労働省 年金制度基礎調査"
+        "subtitle": "出典：総務省家計調査"
       },
-      "triggerFrame": 3843
+      "triggerFrame": 5586
     }
   ],
   "ticker": [
-    "【カツミのぼやき】最近ね、スマホの文字が小さくて困ってるの。孫に拡大の仕方教えてもらったんだけど、すぐ戻っちゃうのよ。でもこのチャンネルの字幕は大きくていいわよね。私が設計したんだけどね、えへへ。",
-    "【ヒロシのぼやき】週末に釣り行きたいんだけどさ、子供の習い事の送り迎えと、スーパーの買い出しと、洗濯と...いつの間にか日曜の夜になってるんですよ。サザエさん症候群ってやつですね。"
+    "【カツミのぼやき】正直ね、いろんな制度って毎年ちょっとずつ変わるから追いかけるの大変なのよ。でもね、「知らなかった」で損するのが一番悔しいじゃない？だからこうやって毎日調べてるわけ。一緒に勉強しましょうね。",
+    "【ヒロシのぼやき】会社の後輩に「ヒロシさん、TikTok見てます？」って聞かれてさ。見てないけど、子供がスマホで何か見てるのはあれかな？ジェネレーションギャップって急に来るよね。"
   ],
   "countUpData": [],
   "layoutPattern": "documentary",
   "householdBudget": {
-    "personLabel": "70歳夫婦・都内在住",
-    "income": 148000,
+    "personLabel": "68歳男性・妻と二人暮らし",
+    "income": 62000,
     "expenses": [
       {
         "label": "家賃",
-        "amount": 55000
+        "amount": 35000
       },
       {
         "label": "食費",
-        "amount": 40000
+        "amount": 25000
       },
       {
         "label": "医療費",
-        "amount": 8000
-      },
-      {
-        "label": "光熱費",
         "amount": 12000
       },
       {
+        "label": "光熱費",
+        "amount": 8000
+      },
+      {
         "label": "通信費",
-        "amount": 7000
+        "amount": 5000
       },
       {
         "label": "その他",
-        "amount": 8000
+        "amount": 15000
       }
     ]
   }
